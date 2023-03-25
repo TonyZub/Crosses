@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Bootstrap.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/WelcomeScreen.unity
+    guid: 9c4b0f47b2f2dad47b17c01475702ed7
+  - enabled: 1
+    path: Assets/Scenes/Gameplay.unity
+    guid: 0b1ee5ed8195f4f418458eb60fc68fd5
+  - enabled: 1
+    path: Assets/Scenes/TransitionalScreen.unity
+    guid: e0e931380b4024c4e988cbad4f571ef2
+  - enabled: 1
+    path: Assets/Scenes/MetodicScreen.unity
+    guid: 74035d8b179de8e4396242380c2dd039
+  - enabled: 1
+    path: Assets/Scenes/ThanksScreen.unity
+    guid: ac15a10015517f140a90f4ca99727c75
+  m_configObjects: {}
