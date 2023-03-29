@@ -19,13 +19,14 @@ namespace Crosses
 
         protected override void OnSceneLoadingComplete()
         {
-            //TODO
+            GlobalContext.Instance.RegisterDependency(new WelcomeScreenController(ObjectFinder.
+                FindObjectOfType<WelcomeScreenCanvasModel>()));
             base.OnSceneLoadingComplete();
         }
 
         public override void ExitState()
         {
-            //TODO
+            GlobalContext.Instance.UnregisterDependency<WelcomeScreenController>();
         }
 
         #endregion

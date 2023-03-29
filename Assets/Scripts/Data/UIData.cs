@@ -9,6 +9,8 @@ namespace Crosses
 		#region Fields
 
 		[SerializeField] private SceneLoadingCanvasModel _sceneLoadingCanvasModel;
+		[SerializeField] private Sprite _crossSprite;
+		[SerializeField] private Sprite _noughtSprite;
 
 		#endregion
 
@@ -16,6 +18,8 @@ namespace Crosses
 		#region Properties
 
 		public SceneLoadingCanvasModel SceneLoadingCanvasModel => _sceneLoadingCanvasModel;
+		public Sprite CrossSprite => _crossSprite;
+		public Sprite NoughtSprite => _noughtSprite;
 
 		#endregion
 	}

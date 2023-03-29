@@ -19,13 +19,14 @@ namespace Crosses
 
         protected override void OnSceneLoadingComplete()
         {
-            //TODO
+            GlobalContext.Instance.RegisterDependency(new GameplayController(ObjectFinder.
+                FindObjectOfType<GameplayCanvasModel>(true)));
             base.OnSceneLoadingComplete();
         }
 
         public override void ExitState()
         {
-            //TODO
+            GlobalContext.Instance.UnregisterDependency<GameplayController>();
         }
 
         #endregion

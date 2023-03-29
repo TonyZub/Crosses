@@ -17,6 +17,8 @@ namespace Crosses
 
         #region Events
 
+        public event Action OnBeforeStateChange;
+        public event Action SceneStateChanging;
         public event Action OnSceneStateChanged;
 
         #endregion
@@ -57,6 +59,7 @@ namespace Crosses
         {
             CheckIfStatesArrayComplete();
             CheckIfCurrentStateIsNotNull();
+            OnBeforeStateChange?.Invoke();
             CurrentSceneState.ExitState();
             InitSceneSwitch(stateName);
         }
@@ -87,7 +90,7 @@ namespace Crosses
         private void SetStartState()
         {
             CheckIfStatesArrayComplete();
-            if(LevelSelectionHelper.IsLevelSelected)
+            if (LevelSelectionHelper.IsLevelSelected)
             {
                 InitSceneSwitch((SceneStateNames)(LevelSelectionHelper.SelectedLevelIndex + 2)); // 2 - difference in indexes between array an enum of names  
             }
@@ -99,6 +102,7 @@ namespace Crosses
 
         private void InitSceneSwitch(SceneStateNames stateName)
         {
+            SceneStateChanging?.Invoke();
             CurrentSceneState = GetSceneStateFromArrayByName(stateName);
             OnSceneStateChanged?.Invoke();
             CurrentSceneState.EnterState();

@@ -1,0 +1,18 @@
+using UnityEngine;
+
+
+namespace Crosses
+{
+	[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "Data/#SCRIPTNAME#")]
+	public class #SCRIPTNAME# : ScriptableObject
+	{
+		#region Fields
+
+		#endregion
+
+
+		#region Properties
+
+		#endregion
+	}
+}

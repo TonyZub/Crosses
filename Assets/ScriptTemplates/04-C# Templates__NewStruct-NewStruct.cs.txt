@@ -1,0 +1,14 @@
+namespace Crosses
+{
+	public struct #SCRIPTNAME#
+	{
+		#region Fields
+
+		#endregion
+
+
+		#region Properties
+
+		#endregion
+	}
+}

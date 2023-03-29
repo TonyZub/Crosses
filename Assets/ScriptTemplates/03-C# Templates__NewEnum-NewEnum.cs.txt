@@ -1,0 +1,7 @@
+namespace Crosses
+{
+	public enum #SCRIPTNAME#
+	{
+		None = 0,
+	}
+}

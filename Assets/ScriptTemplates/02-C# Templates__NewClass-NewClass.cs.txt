@@ -1,0 +1,22 @@
+using UnityEngine;
+
+
+namespace Crosses
+{
+	public sealed class #SCRIPTNAME#
+	{
+		#region Fields
+
+		#endregion
+
+
+		#region Properties
+
+		#endregion
+
+
+		#region Methods
+
+		#endregion
+	}
+}
