@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 
 
@@ -25,8 +24,10 @@ namespace Crosses
 
         #region Methods
 
-        public static bool IsEndGame(GameFieldController fieldControoller, out GameSides winner)
+        public static bool IsEndGame(GameFieldController fieldControoller, out CellType[] winCombination,
+            out GameSides winner)
         {
+            winCombination = null;
             winner = GameSides.None;
             var isEndGame = !fieldControoller.CellDatas.Contains(null);
 
@@ -40,12 +41,19 @@ namespace Crosses
                     secondCellData.WhosMark == thirdCellData.WhosMark))
                 {
                     isEndGame = true;
+                    winCombination = combinaton;
                     winner = firstCellData.WhosMark;
                     break;
                 }
             }
 
             return isEndGame;
+        }
+
+        public static bool IsAlmostWinFor(GameSides side, GameFieldController fieldControoller, out CellType cellLeft)
+        {
+            cellLeft = CellType.None;
+            return false;
         }
 
         #endregion

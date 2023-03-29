@@ -66,7 +66,6 @@ namespace Crosses
 
         private void SubscribeEvents()
         {
-            MessageLogger.Log("subcribing mark controller");
             SceneStateMachine.Instance.OnBeforeStateChange += UnsubscribeEvents;
             _canvasModel.MarkChoisePanelModel.MarkChosen += OnPlayerMarkChose;
             _canvasModel.ChooseMarkBtn.onClick.AddListener(OnChooseMarkPressed);

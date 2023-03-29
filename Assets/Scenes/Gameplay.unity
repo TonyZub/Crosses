@@ -187,6 +187,102 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _playerCellColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _playerCellColor.b
+      value: 0.56037736
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _playerCellColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _playerCellColor.r
+      value: 0.6284624
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _simpleCellColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _simpleCellColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _simpleCellColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _simpleCellColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _computerCellColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _computerCellColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _computerCellColor.g
+      value: 0.7637296
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _computerCellColor.r
+      value: 0.7294118
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _playerWinCellColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _playerWinCellColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _playerWinCellColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _playerWinCellColor.r
+      value: 0.23854232
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _combinationCellColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _combinationCellColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _combinationCellColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _combinationCellColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _computerWinCellColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _computerWinCellColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _computerWinCellColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _computerWinCellColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1100067743, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

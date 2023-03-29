@@ -77,6 +77,12 @@ namespace Crosses
             _roundController.ComputerTurnStarted += DisableGridInteraction;
             _roundController.ComputerTurnEnded += EnableGridInteraction;
             _markChoiseController.MarkChosen += OnMarkChosenByPlayer;
+            _roundController.ComputerWon += DisableGridInteraction;
+            _roundController.PlayerTurnEnded += DisableGridInteraction;
+            _roundController.Draw += DisableGridInteraction;
+            _roundController.Draw += RenderDraw;
+            _roundController.GotPlayerWinCombination += RenderPlayerWinCombination;
+            _roundController.GotComputerWinCombination += RenderComputerWinCombination;
             foreach (var cell in _canvasModel.Cells)
             {
                 cell.Pressed += OnCellPressedByPlayer;
@@ -91,6 +97,12 @@ namespace Crosses
             _roundController.ComputerTurnStarted -= DisableGridInteraction;
             _roundController.ComputerTurnEnded -= EnableGridInteraction;
             _markChoiseController.MarkChosen -= OnMarkChosenByPlayer;
+            _roundController.ComputerWon -= DisableGridInteraction;
+            _roundController.PlayerTurnEnded -= DisableGridInteraction;
+            _roundController.Draw -= DisableGridInteraction;
+            _roundController.Draw -= RenderDraw;
+            _roundController.GotPlayerWinCombination -= RenderPlayerWinCombination;
+            _roundController.GotComputerWinCombination -= RenderComputerWinCombination;
             foreach (var cell in _canvasModel.Cells)
             {
                 cell.Pressed -= OnCellPressedByPlayer;
@@ -100,7 +112,6 @@ namespace Crosses
 
         private void OnCellPressedByPlayer(GameCellModel cell)
         {
-            MessageLogger.Log(_roundController.IsPlayersTurn);
             if (!_roundController.IsPlayersTurn) return;
             _cellDatas[cell.CellType] = new CellData(_canvasModel.Cells.First(x => x.CellType == cell.CellType),
                 GameSides.Player, _markChoiseController.PlayerMark);
@@ -136,6 +147,32 @@ namespace Crosses
                 var cellInModel = _canvasModel.Cells.First(x => x.CellType == cell.Key);
                 cellInModel.Image.sprite = cell.Value == null ? null : cell.Value.CellMark == CellMarks.Cross ? 
                     Data.UIData.CrossSprite : Data.UIData.NoughtSprite;
+                cellInModel.Image.color = cell.Value == null ? _canvasModel.SimpleCellColor : 
+                    cell.Value.IsPlayersMark ? _canvasModel.PlayerCellColor : _canvasModel.ComputerCellColor;
+            }
+        }
+
+        private void RenderPlayerWinCombination(CellType[] combination)
+        {
+            foreach (var cell in combination)
+            {
+                _canvasModel.Cells.First(x => x.CellType == cell).Image.color = _canvasModel.PlayerWinCellColor;
+            }
+        }
+
+        private void RenderComputerWinCombination(CellType[] combination)
+        {
+            foreach (var cell in combination)
+            {
+                _canvasModel.Cells.First(x => x.CellType == cell).Image.color = _canvasModel.ComputerWinCellColor;
+            }
+        }
+
+        private void RenderDraw()
+        {
+            foreach (var cell in _canvasModel.Cells)
+            {
+                cell.Image.color = _canvasModel.SimpleCellColor;
             }
         }
 
@@ -162,7 +199,8 @@ namespace Crosses
         {
             foreach (var cell in _canvasModel.Cells)
             {
-                cell.Button.interactable = doEnable;
+                if(doEnable && AvaliableCells.Contains(cell.CellType) || !doEnable)
+                    cell.Button.interactable = doEnable;
             }
         }
 

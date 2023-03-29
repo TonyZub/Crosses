@@ -17,6 +17,11 @@ namespace Crosses
         [SerializeField] private Button _chooseMarkBtn;
         [SerializeField] private Button _giveUpBtn;
         [SerializeField] private TMP_Text _roundTxt;
+        [SerializeField] private Color _simpleCellColor;
+        [SerializeField] private Color _playerCellColor;
+        [SerializeField] private Color _computerCellColor;
+        [SerializeField] private Color _playerWinCellColor;
+        [SerializeField] private Color _computerWinCellColor;
 		[SerializeField] private GameCellModel[] _cells;
 
         #endregion
@@ -32,6 +37,11 @@ namespace Crosses
         public Button ChooseMarkBtn => _chooseMarkBtn;
         public Button GiveUpBtn => _giveUpBtn;
         public TMP_Text RoundTxt => _roundTxt;
+        public Color SimpleCellColor => _simpleCellColor;
+        public Color PlayerCellColor => _playerCellColor;
+        public Color ComputerCellColor => _computerCellColor;
+        public Color PlayerWinCellColor => _playerWinCellColor;
+        public Color ComputerWinCellColor => _computerWinCellColor;
         public GameCellModel[] Cells => _cells;
 
         #endregion

@@ -9,10 +9,17 @@ namespace Crosses
 {
     public sealed class AIController
     {
-        #region Constants
+        #region PrivateData
 
         private const float MIN_COMPUTER_THINKING_TIME = 1f;
         private const float MAX_COMPUTER_THINKING_TIME = 5f;
+
+        private enum FirstTurn
+        {
+            Center,
+            Diagonal,
+            Side
+        }
 
         #endregion
 
@@ -69,7 +76,7 @@ namespace Crosses
             {
                 case Difficulty.None:
                     break;
-                case Difficulty.Easy:
+                case Difficulty.Random:
                     DOVirtual.DelayedCall(GetThinkingTime(), MakeTurnEasyDifficulty);
                     break;
                 case Difficulty.Impossible:
@@ -95,6 +102,39 @@ namespace Crosses
         private float GetThinkingTime()
         {
             return Random.Range(MIN_COMPUTER_THINKING_TIME, MAX_COMPUTER_THINKING_TIME);
+        }
+
+        private void MakeChoise()
+        {
+            var turnIndex = _roundController.TurnIndex / 2;
+            switch (turnIndex)
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void MakeFirstTurn()
+        {
+
+        }
+
+        private void MakeSecondTurn()
+        {
+
+        }
+
+        private void MakeThirdTurn()
+        {
+
         }
 
         #endregion

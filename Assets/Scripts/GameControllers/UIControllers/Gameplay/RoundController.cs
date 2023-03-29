@@ -22,6 +22,8 @@ namespace Crosses
         public event Action ComputerTurnEnded;
         public event Action PlayerWon;
         public event Action ComputerWon;
+        public event Action<CellType[]> GotPlayerWinCombination;
+        public event Action<CellType[]> GotComputerWinCombination;
         public event Action Draw;
 
         #endregion
@@ -42,6 +44,7 @@ namespace Crosses
         #region Properties
 
         public int RoundIndex { get; private set; }
+        public int TurnIndex { get; private set; }
         public bool IsPlayersTurn { get; private set; }
 
         #endregion
@@ -90,6 +93,7 @@ namespace Crosses
         {
             IsPlayersTurn = !_canvasModel.IsComputerFirstTurn;
             RoundIndex += 1;
+            TurnIndex = 1;
             RoundStarted?.Invoke();
             MakeFirstTurn();
         }
@@ -118,7 +122,7 @@ namespace Crosses
 
         private void ContinueRound()
         {
-            if(WinCheckerService.IsEndGame(_gameFieldController, out GameSides winner))
+            if(WinCheckerService.IsEndGame(_gameFieldController, out CellType[] winCombination, out GameSides winner))
             {
                 switch (winner)
                 {
@@ -126,14 +130,16 @@ namespace Crosses
                         Draw?.Invoke();
                         break;
                     case GameSides.Player:
+                        GotPlayerWinCombination?.Invoke(winCombination);
                         PlayerWon?.Invoke();
                         break;
                     case GameSides.Computer:
+                        GotComputerWinCombination?.Invoke(winCombination);
                         ComputerWon?.Invoke();
                         break;
                     default:
                         break;
-                }
+                }            
                 return;
             }
             MakeNextTurn();
@@ -146,6 +152,7 @@ namespace Crosses
 
         private void MakeNextTurn()
         {
+            TurnIndex++;
             IsPlayersTurn = !IsPlayersTurn;
             DecideTurn();
         }
