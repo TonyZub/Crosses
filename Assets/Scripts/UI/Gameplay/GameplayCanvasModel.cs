@@ -10,6 +10,9 @@ namespace Crosses
         #region Fields
 
         [SerializeField] private Difficulty _difficulty;
+        [SerializeField] private float _computerMinThinkingTime;
+        [SerializeField] private float _computerMaxThinkingTime;
+        [SerializeField] private float _delayBeforeFirstStart;
         [SerializeField] private int _minRounds;
         [SerializeField] private bool _isComputerFirstTurn;
         [SerializeField] private MarkChoisePanelModel _markChoisePanelModel;
@@ -30,6 +33,9 @@ namespace Crosses
         #region Properties
 
         public Difficulty Difficulty => _difficulty;
+        public float ComputerMinThinkingTime => _computerMinThinkingTime;
+        public float ComputerMaxThinkingTime => _computerMaxThinkingTime;
+        public float DelayBeforeFirstStart => _delayBeforeFirstStart;
         public int MinRounds => _minRounds;
         public bool IsComputerFirstTurn => _isComputerFirstTurn;
         public MarkChoisePanelModel MarkChoisePanelModel => _markChoisePanelModel;

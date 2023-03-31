@@ -6,13 +6,6 @@ namespace Crosses
 {
 	public sealed class RoundController
 	{
-        #region PrivateData
-
-        private const float DELAY_BEFORE_FIRST_START = 2f;
-
-        #endregion
-
-
         #region Events
 
         public event Action RoundStarted;
@@ -86,7 +79,7 @@ namespace Crosses
         private void OnMarkChosen()
         {
             _markChoiseController.MarkChosen -= OnMarkChosen;
-            _roundTween = DOVirtual.DelayedCall(DELAY_BEFORE_FIRST_START, StartRound);
+            _roundTween = DOVirtual.DelayedCall(_canvasModel.DelayBeforeFirstStart, StartRound);
         }
 
         private void StartRound()

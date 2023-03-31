@@ -1,6 +1,5 @@
 using System;
 using Extensions;
-using System.Linq;
 using DG.Tweening;
 using Random = UnityEngine.Random;
 
@@ -9,21 +8,6 @@ namespace Crosses
 {
     public sealed class AIController
     {
-        #region PrivateData
-
-        private const float MIN_COMPUTER_THINKING_TIME = 1f;
-        private const float MAX_COMPUTER_THINKING_TIME = 5f;
-
-        private enum FirstTurn
-        {
-            Center,
-            Diagonal,
-            Side
-        }
-
-        #endregion
-
-
         #region Events
 
         public event Action<CellData> ComputerChoseCell;
@@ -100,7 +84,7 @@ namespace Crosses
 
         private float GetThinkingTime()
         {
-            return Random.Range(MIN_COMPUTER_THINKING_TIME, MAX_COMPUTER_THINKING_TIME);
+            return Random.Range(_canvasModel.ComputerMinThinkingTime, _canvasModel.ComputerMaxThinkingTime);
         }
 
         #endregion

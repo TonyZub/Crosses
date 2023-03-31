@@ -12,7 +12,7 @@ namespace Crosses
 
         private static int[][] _markPoints = new int[3][]
         {
-            new int[3] { 0, 30, 100},
+            new int[3] { 1, 30, 100},
             new int[3] { 10, 10, 0},
             new int[3] { 50, 0, 0},
         };
@@ -29,14 +29,7 @@ namespace Crosses
             new CellType[3]{ CellType.BotLeft, CellType.CenterCenter, CellType.TopRight}
         };
 
-        #endregion
-
-
-        #region Fields
-
-        private readonly GameFieldController _fieldController;
-
-        private readonly Dictionary<CellType, CellType[]> _bestSecondMoves = new Dictionary<CellType, CellType[]>()
+        private static Dictionary<CellType, CellType[]> _bestSecondMoves = new Dictionary<CellType, CellType[]>()
         {
             { CellType.TopLeft, new CellType[1]{ CellType.CenterCenter } },
             { CellType.TopCenter, new CellType[3]{ CellType.CenterCenter, CellType.TopLeft, CellType.TopRight }},
@@ -48,6 +41,13 @@ namespace Crosses
             { CellType.BotCenter, new CellType[3]{ CellType.CenterCenter, CellType.BotLeft, CellType.BotRight }},
             { CellType.BotRight, new CellType[1]{ CellType.CenterCenter }}
         };
+
+        #endregion
+
+
+        #region Fields
+
+        private readonly GameFieldController _fieldController;
 
         private Dictionary<CellData, int> _cellPoints;
         private GameSides _checkSide;
@@ -86,8 +86,8 @@ namespace Crosses
                 _cellPoints[cell] += GetMarkPointsForLine(sameMarksInCol, oppositeMarksInCol);
                 _cellPoints[cell] += GetMarkPointsForLine(sameMarksOnMajorDiag, oppositeMarksOnMajorDiag);
                 _cellPoints[cell] += GetMarkPointsForLine(sameMarksOnMinorDiag, oppositeMarksOnMinorDiag);
+                Debug.Log($"Analyze for cell {cell.CellType} : {_cellPoints[cell]}");
             }
-            
             maxPoint = Mathf.Max(_cellPoints.Values.ToArray());
         }
 
@@ -122,7 +122,8 @@ namespace Crosses
 
         private CellData GetBestSecondMove(CellType firstMove)
         {
-            return _fieldController.AllCellDatas.First(x => x.CellType == _bestSecondMoves[firstMove].RandomObject());
+            var randomType = _bestSecondMoves[firstMove].RandomObject();
+            return _fieldController.AllCellDatas.First(x => x.CellType == randomType);
         }
 
         #endregion

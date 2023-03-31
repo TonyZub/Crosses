@@ -89,11 +89,12 @@ namespace Crosses
         {
             SceneStateMachine.Instance.SceneStateChanging += UnsubscribeEvents;
             _roundController.RoundStarted += ClearCells;
-            _roundController.ComputerTurnStarted += DisableGridInteraction;
-            _roundController.ComputerTurnEnded += EnableGridInteraction;
+            //_roundController.ComputerTurnStarted += DisableGridInteraction;
+            //_roundController.ComputerTurnEnded += EnableGridInteraction;
+            _roundController.PlayerTurnStarted += EnableGridInteraction;
+            _roundController.PlayerTurnEnded += DisableGridInteraction;
             _markChoiseController.MarkChosen += OnMarkChosenByPlayer;
             _roundController.ComputerWon += DisableGridInteraction;
-            _roundController.PlayerTurnEnded += DisableGridInteraction;
             _roundController.Draw += DisableGridInteraction;
             _roundController.Draw += RenderDraw;
             _roundController.GotPlayerWinCombination += RenderPlayerWinCombination;
@@ -109,11 +110,11 @@ namespace Crosses
         {
             SceneStateMachine.Instance.SceneStateChanging -= UnsubscribeEvents;
             _roundController.RoundStarted -= ClearCells;
-            _roundController.ComputerTurnStarted -= DisableGridInteraction;
-            _roundController.ComputerTurnEnded -= EnableGridInteraction;
-            _markChoiseController.MarkChosen -= OnMarkChosenByPlayer;
-            _roundController.ComputerWon -= DisableGridInteraction;
+            //_roundController.ComputerTurnStarted -= DisableGridInteraction;
+            //_roundController.ComputerTurnEnded -= EnableGridInteraction;
+            _roundController.PlayerTurnStarted -= EnableGridInteraction;
             _roundController.PlayerTurnEnded -= DisableGridInteraction;
+            _markChoiseController.MarkChosen -= OnMarkChosenByPlayer;
             _roundController.Draw -= DisableGridInteraction;
             _roundController.Draw -= RenderDraw;
             _roundController.GotPlayerWinCombination -= RenderPlayerWinCombination;
@@ -201,6 +202,7 @@ namespace Crosses
             foreach (var cell in _canvasModel.Cells)
             {
                 cell.Image.sprite = null;
+                cell.Image.color = _canvasModel.SimpleCellColor;
             }
         }
 
