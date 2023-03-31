@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Extensions;
 
 
@@ -7,35 +8,13 @@ namespace Crosses
 {
 	public sealed class FieldAnalyzer
 	{
-        #region Fields
+        #region Constants
 
-        private readonly GameFieldController _fieldController;
-        private readonly RoundController _roundController;
-
-        private readonly Dictionary<CellType, CellData> _cellDatas = new Dictionary<CellType, CellData>()
+        private static int[][] _markPoints = new int[3][]
         {
-            { CellType.TopLeft, null},
-            { CellType.TopCenter, null},
-            { CellType.TopRight, null},
-            { CellType.CenterLeft, null},
-            { CellType.CenterCenter, null},
-            { CellType.CenterRight, null},
-            { CellType.BotLeft, null},
-            { CellType.BotCenter, null},
-            { CellType.BotRight, null}
-        };
-
-        private readonly Dictionary<CellType, CellType[]> _bestSecondMoves = new Dictionary<CellType, CellType[]>()
-        {
-            { CellType.TopLeft, new CellType[1]{ CellType.CenterCenter } },
-            { CellType.TopCenter, new CellType[3]{ CellType.CenterCenter, CellType.TopLeft, CellType.TopRight }},
-            { CellType.TopRight, new CellType[1]{ CellType.CenterCenter }},
-            { CellType.CenterLeft, new CellType[3]{ CellType.CenterCenter, CellType.TopLeft, CellType.BotLeft }},
-            { CellType.CenterCenter, new CellType[4]{ CellType.TopCenter, CellType.TopRight, CellType.BotLeft, CellType.BotRight }},
-            { CellType.CenterRight, new CellType[3]{ CellType.CenterCenter, CellType.TopRight, CellType.BotRight }},
-            { CellType.BotLeft, new CellType[1]{ CellType.CenterCenter }},
-            { CellType.BotCenter, new CellType[3]{ CellType.CenterCenter, CellType.BotLeft, CellType.BotRight }},
-            { CellType.BotRight, new CellType[1]{ CellType.CenterCenter }}
+            new int[3] { 0, 30, 100},
+            new int[3] { 10, 10, 0},
+            new int[3] { 50, 0, 0},
         };
 
         private static CellType[][] _winCombinations = new CellType[8][]
@@ -50,8 +29,27 @@ namespace Crosses
             new CellType[3]{ CellType.BotLeft, CellType.CenterCenter, CellType.TopRight}
         };
 
-        private Dictionary<CellType, int> _cellPoints;
+        #endregion
 
+
+        #region Fields
+
+        private readonly GameFieldController _fieldController;
+
+        private readonly Dictionary<CellType, CellType[]> _bestSecondMoves = new Dictionary<CellType, CellType[]>()
+        {
+            { CellType.TopLeft, new CellType[1]{ CellType.CenterCenter } },
+            { CellType.TopCenter, new CellType[3]{ CellType.CenterCenter, CellType.TopLeft, CellType.TopRight }},
+            { CellType.TopRight, new CellType[1]{ CellType.CenterCenter }},
+            { CellType.CenterLeft, new CellType[3]{ CellType.CenterCenter, CellType.TopLeft, CellType.BotLeft }},
+            { CellType.CenterCenter, new CellType[4]{ CellType.TopCenter, CellType.TopRight, CellType.BotLeft, CellType.BotRight }},
+            { CellType.CenterRight, new CellType[3]{ CellType.CenterCenter, CellType.TopRight, CellType.BotRight }},
+            { CellType.BotLeft, new CellType[1]{ CellType.CenterCenter }},
+            { CellType.BotCenter, new CellType[3]{ CellType.CenterCenter, CellType.BotLeft, CellType.BotRight }},
+            { CellType.BotRight, new CellType[1]{ CellType.CenterCenter }}
+        };
+
+        private Dictionary<CellData, int> _cellPoints;
         private GameSides _checkSide;
         private GameSides _oppositeSide;
 
@@ -60,10 +58,9 @@ namespace Crosses
 
         #region Constructor
 
-        public FieldAnalyzer(GameFieldController fieldController, RoundController roundController)
+        public FieldAnalyzer(GameFieldController fieldController)
         {
             _fieldController = fieldController;
-            _roundController = roundController;
         }
 
         #endregion
@@ -71,73 +68,81 @@ namespace Crosses
 
         #region Private Methods
 
-        private void ClearCellsDictionary()
+        private void GetCellPoints(out int maxPoint)
         {
-            foreach (var key in _cellDatas.Keys)
-            {
-                _cellDatas[key] = null;
-            }
-        }
-
-        private Dictionary<CellType, int> GetCellPoints()
-        {
-            _cellPoints = new Dictionary<CellType, int>();
-            _checkSide = _roundController.IsPlayersTurn ? GameSides.Player : GameSides.Computer;
-            _oppositeSide = _roundController.IsPlayersTurn ? GameSides.Computer : GameSides.Player;
-
+            _cellPoints = new Dictionary<CellData, int>();
             foreach (var cell in _fieldController.AvaliableCellDatas)
             {
-                _cellPoints.Add(cell.CellType, 0);
-
+                _cellPoints.Add(cell, 0);
+                int sameMarksInRow = GetMarksInRow(cell, _checkSide);
+                int sameMarksInCol = GetMarksInCol(cell, _checkSide);
+                int sameMarksOnMajorDiag = GetMarksInMajorDiagonal(cell, _checkSide);
+                int sameMarksOnMinorDiag = GetMarksInMinorDiagonal(cell, _checkSide);
+                int oppositeMarksInRow = GetMarksInRow(cell, _oppositeSide);
+                int oppositeMarksInCol = GetMarksInCol(cell, _oppositeSide);
+                int oppositeMarksOnMajorDiag = GetMarksInMajorDiagonal(cell, _oppositeSide);
+                int oppositeMarksOnMinorDiag = GetMarksInMinorDiagonal(cell, _oppositeSide);
+                _cellPoints[cell] += GetMarkPointsForLine(sameMarksInRow, oppositeMarksInRow);
+                _cellPoints[cell] += GetMarkPointsForLine(sameMarksInCol, oppositeMarksInCol);
+                _cellPoints[cell] += GetMarkPointsForLine(sameMarksOnMajorDiag, oppositeMarksOnMajorDiag);
+                _cellPoints[cell] += GetMarkPointsForLine(sameMarksOnMinorDiag, oppositeMarksOnMinorDiag);
             }
-
-            return _cellPoints;
+            
+            maxPoint = Mathf.Max(_cellPoints.Values.ToArray());
         }
 
-        private CellType GetBestSecondMove(CellType firstMove)
+        private int GetMarksInRow(CellData cell, GameSides side)
         {
-            return _bestSecondMoves[firstMove].RandomObject();
+            return _fieldController.AllCellDatas.Where(x => x.Row == cell.Row && _fieldController.
+                GetMarkForCell(x) == side).Count();
         }
 
-        //private int GetRowPoints(CellData cell, out int sameMarksInRow, out int oppositeMarksInRow)
-        //{
-        //    CellData[] sameRowCells = _fieldController.CellDatasValues
-        //}
+        private int GetMarksInCol(CellData cell, GameSides side)
+        {
+            return _fieldController.AllCellDatas.Where(x => x.Column == cell.Column && _fieldController.
+                GetMarkForCell(x) == side).Count();
+        }
 
-        //private int GetColumnPoints(CellType cell, out int sameMarksInCol, out int oppositeMarksInCol)
-        //{
+        private int GetMarksInMajorDiagonal(CellData cell, GameSides side)
+        {
+            return cell.IsOnMajorDiagonal ? _fieldController.AllCellDatas.Where(x => x.IsOnMajorDiagonal && 
+                _fieldController.GetMarkForCell(x) == side).Count() : 0;
+        }
 
-        //}
+        private int GetMarksInMinorDiagonal(CellData cell, GameSides side)
+        {
+            return cell.IsOnMinorDiagonal ? _fieldController.AllCellDatas.Where(x => x.IsOnMinorDiagonal &&
+                _fieldController.GetMarkForCell(x) == side).Count() : 0;
+        }
 
-        //private int GetMajorDiagonalPoints(CellType cell, out int sameMarksInDiag, out int oppositeMarksInDiag)
-        //{
+        private int GetMarkPointsForLine(int sameMarks, int oppositeMarks)
+        {
+            return _markPoints[oppositeMarks][sameMarks];
+        }
 
-        //}
-
-        //private void GetMinorDiagonalPoints(CellType cell, out int sameMarksInDiag, out int oppositeMarksInDiag)
-        //{
-
-        //}
+        private CellData GetBestSecondMove(CellType firstMove)
+        {
+            return _fieldController.AllCellDatas.First(x => x.CellType == _bestSecondMoves[firstMove].RandomObject());
+        }
 
         #endregion
 
 
         #region Public Methods
 
-        public void GetBestMove(GameFieldController fieldController, GameSides whosTurn, int turnIndex, 
-            out CellType cell)
+        public CellData GetBestMove(GameFieldController fieldController, GameSides whosTurn, int turnIndex)
         {
-            cell = CellType.None;
+            _checkSide = whosTurn;
+            _oppositeSide = _checkSide == GameSides.Player ? GameSides.Computer : GameSides.Player;
             switch (turnIndex)
             {
                 case 0:
-                    cell = fieldController.AvaliableCellDatas.RandomObject().CellType;
-                    break;
+                    return fieldController.AvaliableCellDatas.RandomObject();
                 case 1:
-                    //cell = GetBestSecondMove(fieldController.MarkedCellTypes[0]);
-                    break;
+                    return GetBestSecondMove(fieldController.MarkedCellDatas[0].CellType);
                 default:
-                    break;
+                    GetCellPoints(out int maxPoints);
+                    return _cellPoints.Where(x => x.Value == maxPoints).ToArray().RandomObject().Key;
             }
         }
 

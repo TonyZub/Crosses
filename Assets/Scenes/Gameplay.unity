@@ -188,6 +188,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _difficulty
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
       propertyPath: _playerCellColor.a
       value: 1
       objectReference: {fileID: 0}

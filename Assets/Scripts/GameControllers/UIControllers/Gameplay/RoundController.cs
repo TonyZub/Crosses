@@ -93,7 +93,7 @@ namespace Crosses
         {
             IsPlayersTurn = !_canvasModel.IsComputerFirstTurn;
             RoundIndex += 1;
-            TurnIndex = 1;
+            TurnIndex = 0;
             RoundStarted?.Invoke();
             MakeFirstTurn();
         }

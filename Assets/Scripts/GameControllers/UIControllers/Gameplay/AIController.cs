@@ -36,7 +36,7 @@ namespace Crosses
         private readonly GameplayCanvasModel _canvasModel;
         private readonly RoundController _roundController;
         private readonly GameFieldController _gameFieldController;
-        private readonly MarkChoiseController _markChoiseController;
+        private readonly FieldAnalyzer _analyzer;
 
         #endregion
 
@@ -44,12 +44,12 @@ namespace Crosses
         #region Constructor
 
         public AIController(GameplayCanvasModel canvasModel, RoundController roundController, 
-            GameFieldController gameFieldController, MarkChoiseController markChoiseController)
+            GameFieldController gameFieldController)
         {
             _canvasModel = canvasModel;
             _roundController = roundController;
             _gameFieldController = gameFieldController;
-            _markChoiseController = markChoiseController;
+            _analyzer = new FieldAnalyzer(_gameFieldController);
             SubscribeEvents();
         }
 
@@ -93,8 +93,9 @@ namespace Crosses
         }
 
         private void MakeTurnImpossibleDifficulty()
-        {
-            //TODO
+        {     
+            ComputerChoseCell?.Invoke(_analyzer.GetBestMove(_gameFieldController, GameSides.Computer, 
+                _roundController.TurnIndex));
         }
 
         private float GetThinkingTime()

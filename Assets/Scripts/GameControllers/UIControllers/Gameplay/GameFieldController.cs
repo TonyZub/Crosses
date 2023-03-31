@@ -40,6 +40,7 @@ namespace Crosses
 
         #region Properties
 
+        public CellData[] AllCellDatas => _cellDatas.Select(x => x.Key).ToArray();
         public CellData[] AvaliableCellDatas => _cellDatas.Where(x => x.Value == GameSides.None).Select(x => x.Key).ToArray();
         public CellData[] MarkedCellDatas => _cellDatas.Where(x => x.Value != GameSides.None).Select(x => x.Key).ToArray();
         public CellData[] PlayerCells => _cellDatas.Where(x => x.Value == GameSides.Player).Select(x => x.Key).ToArray();
@@ -56,7 +57,7 @@ namespace Crosses
             _canvasModel = canvasModel;
             _markChoiseController = markChoiseController;
             _roundController = roundController;
-            _aiController = new AIController(_canvasModel, _roundController, this, _markChoiseController);
+            _aiController = new AIController(_canvasModel, _roundController, this);
             ClearCells();
             SubscribeEvents();
         }
