@@ -22,18 +22,28 @@ namespace Crosses
         private readonly MarkChoiseController _markChoiseController;
         private readonly AIController _aiController;
 
-        private Dictionary<CellType, CellData> _cellDatas;
+        private readonly Dictionary<CellData, GameSides> _cellDatas = new Dictionary<CellData, GameSides>()
+        {
+            { new CellData(CellType.TopLeft, 1, 1, true, false), GameSides.None },
+            { new CellData(CellType.TopCenter, 1, 2, false, false), GameSides.None },
+            { new CellData(CellType.TopRight, 1, 3, false, true), GameSides.None },
+            { new CellData(CellType.CenterLeft, 2, 1, false, false), GameSides.None },
+            { new CellData(CellType.CenterCenter, 2, 2, true, true), GameSides.None },
+            { new CellData(CellType.CenterRight, 2, 3, false, false), GameSides.None },
+            { new CellData(CellType.BotLeft, 3, 1, false, true), GameSides.None },
+            { new CellData(CellType.BotCenter, 3, 2, false, false), GameSides.None },
+            { new CellData(CellType.BotRight, 3, 3, true, false), GameSides.None }
+        };
 
         #endregion
 
 
         #region Properties
 
-        public CellType[] CellDatasKeys => _cellDatas.Keys.ToArray();
-        public CellType[] AvaliableCells => _cellDatas.Where(x => x.Value == null).Select(x => x.Key).ToArray();
-        public CellData[] CellDatas => _cellDatas.Values.ToArray();
-        public CellData[] PlayerCells { get; private set; }
-        public CellData[] ComputerCells { get; private set; }
+        public CellData[] AvaliableCellDatas => _cellDatas.Where(x => x.Value == GameSides.None).Select(x => x.Key).ToArray();
+        public CellData[] MarkedCellDatas => _cellDatas.Where(x => x.Value != GameSides.None).Select(x => x.Key).ToArray();
+        public CellData[] PlayerCells => _cellDatas.Where(x => x.Value == GameSides.Player).Select(x => x.Key).ToArray();
+        public CellData[] ComputerCells => _cellDatas.Where(x => x.Value == GameSides.Computer).Select(x => x.Key).ToArray();
 
         #endregion
 
@@ -58,16 +68,20 @@ namespace Crosses
 
         private void ClearCellsDictionary()
         {
-            _cellDatas = new Dictionary<CellType, CellData>();
-            _cellDatas.Add(CellType.TopLeft, null);
-            _cellDatas.Add(CellType.TopCenter, null);
-            _cellDatas.Add(CellType.TopRight, null);
-            _cellDatas.Add(CellType.CenterLeft, null);
-            _cellDatas.Add(CellType.CenterCenter, null);
-            _cellDatas.Add(CellType.CenterRight, null);
-            _cellDatas.Add(CellType.BotLeft, null);
-            _cellDatas.Add(CellType.BotCenter, null);
-            _cellDatas.Add(CellType.BotRight, null);
+            foreach (var cellDataKeys in _cellDatas.Keys.ToList())
+            {
+                _cellDatas[cellDataKeys] = GameSides.None;
+            }
+        }
+
+        private void SetCellSide(CellType cellType, GameSides side)
+        {
+            _cellDatas[_cellDatas.Keys.First(x => x.CellType == cellType)] = side;
+        }
+
+        private bool IsCellTypeAvaliable(CellType type)
+        {
+            return AvaliableCellDatas.FirstOrDefault(x => x.CellType == type) != null;
         }
 
         private void SubscribeEvents()
@@ -113,30 +127,20 @@ namespace Crosses
         private void OnCellPressedByPlayer(GameCellModel cell)
         {
             if (!_roundController.IsPlayersTurn) return;
-            _cellDatas[cell.CellType] = new CellData(_canvasModel.Cells.First(x => x.CellType == cell.CellType),
-                GameSides.Player, _markChoiseController.PlayerMark);
+            SetCellSide(cell.CellType, GameSides.Player);
             RenderCells();
-            UpdatePlayersCells();
             PlayerChoseCell?.Invoke();
         }
 
         private void OnCellChosenByComputer(CellData cell)
         {
-            _cellDatas[cell.CellType] = cell;
+            SetCellSide(cell.CellType, GameSides.Computer);
             RenderCells();
-            UpdateComputersCells();
             ComputerChoseCell?.Invoke();
         }
 
         private void OnMarkChosenByPlayer()
         {
-            for (int i = 0; i < CellDatasKeys.Length; i++)
-            {
-                if (_cellDatas[CellDatasKeys[i]] == null) continue;
-                _cellDatas[CellDatasKeys[i]] = new CellData(_cellDatas[CellDatasKeys[i]],
-                    _cellDatas[CellDatasKeys[i]].IsPlayersMark ? _markChoiseController.PlayerMark :
-                        _markChoiseController.ComputerMark);
-            }
             RenderCells();
         }
 
@@ -144,11 +148,25 @@ namespace Crosses
         {
             foreach (var cell in _cellDatas)
             {
-                var cellInModel = _canvasModel.Cells.First(x => x.CellType == cell.Key);
-                cellInModel.Image.sprite = cell.Value == null ? null : cell.Value.CellMark == CellMarks.Cross ? 
-                    Data.UIData.CrossSprite : Data.UIData.NoughtSprite;
-                cellInModel.Image.color = cell.Value == null ? _canvasModel.SimpleCellColor : 
-                    cell.Value.IsPlayersMark ? _canvasModel.PlayerCellColor : _canvasModel.ComputerCellColor;
+                var cellInModel = _canvasModel.Cells.First(x => x.CellType == cell.Key.CellType);
+
+                switch (cell.Value)
+                {
+                    case GameSides.None:
+                        cellInModel.Image.sprite = Data.UIData.GetMark(CellMarks.None);
+                        cellInModel.Image.color = _canvasModel.SimpleCellColor;
+                        break;
+                    case GameSides.Player:
+                        cellInModel.Image.sprite = Data.UIData.GetMark(_markChoiseController.PlayerMark);
+                        cellInModel.Image.color = _canvasModel.PlayerCellColor;
+                        break;
+                    case GameSides.Computer:
+                        cellInModel.Image.sprite = Data.UIData.GetMark(_markChoiseController.ComputerMark);
+                        cellInModel.Image.color = _canvasModel.ComputerCellColor;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -199,30 +217,24 @@ namespace Crosses
         {
             foreach (var cell in _canvasModel.Cells)
             {
-                if(doEnable && AvaliableCells.Contains(cell.CellType) || !doEnable)
+                if(doEnable && IsCellTypeAvaliable(cell.CellType) || !doEnable)
                     cell.Button.interactable = doEnable;
             }
         }
 
-        private void UpdatePlayersCells()
+        public CellData GetCellByType(CellType type)
         {
-            //PlayerCells = CellDatas.Where(x => x.WhosMark == GameSides.Player).ToArray();
+            return _cellDatas.First(x => x.Key.CellType == type).Key;
         }
 
-        private void UpdateComputersCells()
+        public GameSides GetMarkForCell(CellData cellData)
         {
-            //ComputerCells = CellDatas.Where(x => x.WhosMark == GameSides.Computer).ToArray();
+            return _cellDatas[cellData];
         }
 
-        public bool HasCellData(CellType cellType)
+        public GameSides GetMarkForCell(CellType cellType)
         {
-            return _cellDatas[cellType] != null;
-        }
-
-        public bool HasCellData(CellType cellType, out CellData data)
-        {
-            data = _cellDatas[cellType];
-            return HasCellData(cellType);
+            return _cellDatas[GetCellByType(cellType)];
         }
 
         #endregion

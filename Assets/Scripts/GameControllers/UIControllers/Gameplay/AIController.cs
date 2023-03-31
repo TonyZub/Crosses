@@ -89,9 +89,7 @@ namespace Crosses
 
         private void MakeTurnEasyDifficulty()
         {
-            var chosenCell = _gameFieldController.AvaliableCells.RandomObject();
-            ComputerChoseCell?.Invoke(new CellData(_canvasModel.Cells.First(x => x.CellType == chosenCell), 
-                GameSides.Computer, _markChoiseController.ComputerMark));
+            ComputerChoseCell?.Invoke(_gameFieldController.AvaliableCellDatas.RandomObject());
         }
 
         private void MakeTurnImpossibleDifficulty()
@@ -102,39 +100,6 @@ namespace Crosses
         private float GetThinkingTime()
         {
             return Random.Range(MIN_COMPUTER_THINKING_TIME, MAX_COMPUTER_THINKING_TIME);
-        }
-
-        private void MakeChoise()
-        {
-            var turnIndex = _roundController.TurnIndex / 2;
-            switch (turnIndex)
-            {
-                case 0:
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void MakeFirstTurn()
-        {
-
-        }
-
-        private void MakeSecondTurn()
-        {
-
-        }
-
-        private void MakeThirdTurn()
-        {
-
         }
 
         #endregion

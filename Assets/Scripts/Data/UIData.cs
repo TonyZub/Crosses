@@ -21,6 +21,16 @@ namespace Crosses
 		public Sprite CrossSprite => _crossSprite;
 		public Sprite NoughtSprite => _noughtSprite;
 
-		#endregion
-	}
+        #endregion
+
+
+        #region Methods
+
+		public Sprite GetMark(CellMarks mark)
+        {
+			return mark == CellMarks.Cross ? CrossSprite : mark == CellMarks.Nought ? NoughtSprite : null;
+        }
+
+        #endregion
+    }
 }

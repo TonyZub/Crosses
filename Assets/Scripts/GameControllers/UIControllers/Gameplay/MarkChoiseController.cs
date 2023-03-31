@@ -60,7 +60,7 @@ namespace Crosses
             if (playerMark != CellMarks.None)
             {
                 PlayerMark = playerMark;
-                ComputerMark = PlayerMark == CellMarks.Cross ? CellMarks.None : CellMarks.Cross;
+                ComputerMark = PlayerMark == CellMarks.Cross ? CellMarks.Nought : CellMarks.Cross;
             }
         }
 
@@ -87,7 +87,7 @@ namespace Crosses
         {
             PlayerDataSaver.SavePlayerMarkChoise(mark);
             PlayerMark = mark;
-            ComputerMark = PlayerMark == CellMarks.Cross ? CellMarks.None : CellMarks.Cross;
+            ComputerMark = PlayerMark == CellMarks.Cross ? CellMarks.Nought : CellMarks.Cross;
             MarkChosen?.Invoke();
             HideMarkChoisePanel();
         }

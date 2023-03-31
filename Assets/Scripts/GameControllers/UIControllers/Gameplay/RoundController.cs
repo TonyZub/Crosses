@@ -122,7 +122,7 @@ namespace Crosses
 
         private void ContinueRound()
         {
-            if(WinCheckerService.IsEndGame(_gameFieldController, out CellType[] winCombination, out GameSides winner))
+            if(FieldAnalyzer.IsEndGame(_gameFieldController, out CellType[] winCombination, out GameSides winner))
             {
                 switch (winner)
                 {

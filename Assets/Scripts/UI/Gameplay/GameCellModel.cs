@@ -18,10 +18,6 @@ namespace Crosses
         #region Fields
 
         [SerializeField] private CellType _cellType;
-        [SerializeField] private int _row;
-        [SerializeField] private int _column;
-        [SerializeField] private bool _isOnMajorDiagonal;
-        [SerializeField] private bool _isOnMinorDiagonal;
         [SerializeField] private Button _button;
         [SerializeField] private Image _image;
 
@@ -33,10 +29,6 @@ namespace Crosses
         public CellType CellType => _cellType;
 		public Button Button => _button;
         public Image Image => _image;
-        public int Row => _row;
-        public int Column => _column;
-        public bool IsOnMajorDiagonal => _isOnMajorDiagonal;
-        public bool IsOnMinorDiagonal => _isOnMinorDiagonal;
 
         #endregion
 
