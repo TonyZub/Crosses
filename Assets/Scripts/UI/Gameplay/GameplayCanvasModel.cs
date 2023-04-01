@@ -14,7 +14,7 @@ namespace Crosses
         [SerializeField] private float _computerMaxThinkingTime;
         [SerializeField] private float _delayBeforeFirstStart;
         [SerializeField] private int _minRounds;
-        [SerializeField] private bool _isComputerFirstTurn;
+        [SerializeField] private GameSides _firstTurnSide;
         [SerializeField] private MarkChoisePanelModel _markChoisePanelModel;
         [SerializeField] private WinPanelModel _winPanelModel;
         [SerializeField] private Button _chooseMarkBtn;
@@ -37,7 +37,7 @@ namespace Crosses
         public float ComputerMaxThinkingTime => _computerMaxThinkingTime;
         public float DelayBeforeFirstStart => _delayBeforeFirstStart;
         public int MinRounds => _minRounds;
-        public bool IsComputerFirstTurn => _isComputerFirstTurn;
+        public GameSides FirstTurnSide => _firstTurnSide;
         public MarkChoisePanelModel MarkChoisePanelModel => _markChoisePanelModel;
         public WinPanelModel WinPanelModel => _winPanelModel;
         public Button ChooseMarkBtn => _chooseMarkBtn;

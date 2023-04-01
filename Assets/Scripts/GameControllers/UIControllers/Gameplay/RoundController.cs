@@ -28,16 +28,22 @@ namespace Crosses
         private readonly MarkChoiseController _markChoiseController;
         private readonly GameFieldController _gameFieldController;
         private readonly WinScreenController _winScreenController;
+        private readonly CheatController _cheatController;
 
         private Tween _roundTween;
+        private Tween _cheatMessageTween;
 
         #endregion
 
 
         #region Properties
 
+        public GameSides FirstTurnSide { get; private set; }
         public int RoundIndex { get; private set; }
         public int TurnIndex { get; private set; }
+        public int PlayerWinAmount { get; private set; }
+        public int ComputerWinAmounts { get; private set; }
+        public int DrawAmounts { get; private set; }
         public bool IsPlayersTurn { get; private set; }
 
         #endregion
@@ -51,6 +57,8 @@ namespace Crosses
             _markChoiseController = markChoiseController;
             _gameFieldController = new GameFieldController(_canvasModel, _markChoiseController, this);
             _winScreenController = new WinScreenController(_canvasModel, this);
+            _cheatController = new CheatController(true);
+            FirstTurnSide = _canvasModel.FirstTurnSide;
             SubcribeEvents();
         }
 
@@ -65,12 +73,24 @@ namespace Crosses
             _gameFieldController.PlayerChoseCell += OnPlayerTurnEnded;
             _gameFieldController.ComputerChoseCell += OnComputerTurnEnded;
             _winScreenController.WinScreenClosed += StartRound;
+            _cheatController.ChangedFirstTurn += OnFirstTurnChangedByCheat;
+            RoundStarted += PrintRoundInfo;
+            PlayerTurnStarted += PrintRoundInfo;
+            PlayerTurnEnded += PrintRoundInfo;
+            ComputerTurnStarted += PrintRoundInfo;
+            ComputerTurnEnded += PrintRoundInfo;
             SceneStateMachine.Instance.SceneStateChanging += UnsubscribeEvents;
         }
 
         private void UnsubscribeEvents()
         {
             SceneStateMachine.Instance.SceneStateChanging -= UnsubscribeEvents;
+            RoundStarted -= PrintRoundInfo;
+            PlayerTurnStarted -= PrintRoundInfo;
+            PlayerTurnEnded -= PrintRoundInfo;
+            ComputerTurnStarted -= PrintRoundInfo;
+            ComputerTurnEnded -= PrintRoundInfo;
+            _cheatController.ChangedFirstTurn -= OnFirstTurnChangedByCheat;
             _gameFieldController.PlayerChoseCell -= OnPlayerTurnEnded;
             _gameFieldController.ComputerChoseCell -= OnComputerTurnEnded;
             _winScreenController.WinScreenClosed -= StartRound;
@@ -82,13 +102,64 @@ namespace Crosses
             _roundTween = DOVirtual.DelayedCall(_canvasModel.DelayBeforeFirstStart, StartRound);
         }
 
+        private void OnFirstTurnChangedByCheat(GameSides firstTurn)
+        {
+            FirstTurnSide = firstTurn;
+            var currentMessage = _canvasModel.RoundTxt.text;
+            switch (FirstTurnSide)
+            {
+                case GameSides.None:
+                    PrintMessage("Теперь тот кто ходит первым определяется случайно");
+                    break;
+                case GameSides.Player:
+                    PrintMessage("Теперь первым всегда ходит игрок");
+                    break;
+                case GameSides.Computer:
+                    PrintMessage("Теперь первым всегда ходит компьютер");
+                    break;
+                default:
+                    break;
+            }
+            _cheatMessageTween = DOVirtual.DelayedCall(CheatController.MESSAGE_DELAY_TIME, PrintRoundInfo);
+        }
+
+        private void PrintMessage(string message)
+        {
+            if (_cheatMessageTween != null && _cheatMessageTween.IsPlaying()) _cheatMessageTween.Kill();
+            _canvasModel.RoundTxt.text = message;
+        }
+
+        private void PrintRoundInfo()
+        {
+            PrintMessage($"Раунд - {RoundIndex} {(IsPlayersTurn ? "Ваш ход" : "Ход компьютера")} \n" +
+                $"Выиграно: {PlayerWinAmount} Проиграно: {ComputerWinAmounts} Ничьих: {DrawAmounts}");
+        }
+
         private void StartRound()
         {
-            IsPlayersTurn = !_canvasModel.IsComputerFirstTurn;
+            DecideWhosTurnFirst();
             RoundIndex += 1;
             TurnIndex = 0;
             RoundStarted?.Invoke();
             MakeFirstTurn();
+        }
+
+        private void DecideWhosTurnFirst()
+        {
+            switch (FirstTurnSide)
+            {
+                case GameSides.None:
+                    IsPlayersTurn = UnityEngine.Random.value > 0.5f;
+                    break;
+                case GameSides.Player:
+                    IsPlayersTurn = true;
+                    break;
+                case GameSides.Computer:
+                    IsPlayersTurn = false;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void StartComputerTurn()
@@ -120,13 +191,16 @@ namespace Crosses
                 switch (winner)
                 {
                     case GameSides.None:
+                        DrawAmounts++;
                         Draw?.Invoke();
                         break;
                     case GameSides.Player:
+                        PlayerWinAmount++;
                         GotPlayerWinCombination?.Invoke(winCombination);
                         PlayerWon?.Invoke();
                         break;
                     case GameSides.Computer:
+                        ComputerWinAmounts++;
                         GotComputerWinCombination?.Invoke(winCombination);
                         ComputerWon?.Invoke();
                         break;

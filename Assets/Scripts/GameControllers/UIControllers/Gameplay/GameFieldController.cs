@@ -40,11 +40,13 @@ namespace Crosses
 
         #region Properties
 
+        public GameSides[] CellSides => _cellDatas.Values.ToArray();
         public CellData[] AllCellDatas => _cellDatas.Select(x => x.Key).ToArray();
         public CellData[] AvaliableCellDatas => _cellDatas.Where(x => x.Value == GameSides.None).Select(x => x.Key).ToArray();
         public CellData[] MarkedCellDatas => _cellDatas.Where(x => x.Value != GameSides.None).Select(x => x.Key).ToArray();
         public CellData[] PlayerCells => _cellDatas.Where(x => x.Value == GameSides.Player).Select(x => x.Key).ToArray();
         public CellData[] ComputerCells => _cellDatas.Where(x => x.Value == GameSides.Computer).Select(x => x.Key).ToArray();
+        public string GameSidesString => CellSides.Select(x => ((int)(x)).ToString()).Aggregate((a, b) => a + b);
 
         #endregion
 
@@ -89,8 +91,6 @@ namespace Crosses
         {
             SceneStateMachine.Instance.SceneStateChanging += UnsubscribeEvents;
             _roundController.RoundStarted += ClearCells;
-            //_roundController.ComputerTurnStarted += DisableGridInteraction;
-            //_roundController.ComputerTurnEnded += EnableGridInteraction;
             _roundController.PlayerTurnStarted += EnableGridInteraction;
             _roundController.PlayerTurnEnded += DisableGridInteraction;
             _markChoiseController.MarkChosen += OnMarkChosenByPlayer;
@@ -110,8 +110,6 @@ namespace Crosses
         {
             SceneStateMachine.Instance.SceneStateChanging -= UnsubscribeEvents;
             _roundController.RoundStarted -= ClearCells;
-            //_roundController.ComputerTurnStarted -= DisableGridInteraction;
-            //_roundController.ComputerTurnEnded -= EnableGridInteraction;
             _roundController.PlayerTurnStarted -= EnableGridInteraction;
             _roundController.PlayerTurnEnded -= DisableGridInteraction;
             _markChoiseController.MarkChosen -= OnMarkChosenByPlayer;

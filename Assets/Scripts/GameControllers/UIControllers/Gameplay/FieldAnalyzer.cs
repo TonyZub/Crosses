@@ -35,11 +35,43 @@ namespace Crosses
             { CellType.TopCenter, new CellType[3]{ CellType.CenterCenter, CellType.TopLeft, CellType.TopRight }},
             { CellType.TopRight, new CellType[1]{ CellType.CenterCenter }},
             { CellType.CenterLeft, new CellType[3]{ CellType.CenterCenter, CellType.TopLeft, CellType.BotLeft }},
-            { CellType.CenterCenter, new CellType[4]{ CellType.TopCenter, CellType.TopRight, CellType.BotLeft, CellType.BotRight }},
+            { CellType.CenterCenter, new CellType[4]{ CellType.TopLeft, CellType.TopRight, CellType.BotLeft, CellType.BotRight }},
             { CellType.CenterRight, new CellType[3]{ CellType.CenterCenter, CellType.TopRight, CellType.BotRight }},
             { CellType.BotLeft, new CellType[1]{ CellType.CenterCenter }},
             { CellType.BotCenter, new CellType[3]{ CellType.CenterCenter, CellType.BotLeft, CellType.BotRight }},
             { CellType.BotRight, new CellType[1]{ CellType.CenterCenter }}
+        };
+
+        private static Dictionary<string, CellType[]> _exceptionsForComputer = new Dictionary<string, CellType[]>()
+        {
+            {
+                "001020100",
+                new CellType[4] {
+                    CellType.CenterLeft, CellType.TopCenter, CellType.BotCenter, CellType.CenterRight
+                }
+            },
+            {
+                "100020001",
+                new CellType[4] {
+                    CellType.CenterLeft, CellType.TopCenter, CellType.BotCenter, CellType.CenterRight
+                }
+            },
+        };
+
+        private static Dictionary<string, CellType[]> _exceptionsForPlayer = new Dictionary<string, CellType[]>()
+        {
+            {
+                "002010200",
+                new CellType[4] {
+                    CellType.CenterLeft, CellType.TopCenter, CellType.BotCenter, CellType.CenterRight
+                }
+            },
+            {
+                "200010002",
+                new CellType[4] {
+                    CellType.CenterLeft, CellType.TopCenter, CellType.BotCenter, CellType.CenterRight
+                }
+            },
         };
 
         #endregion
@@ -86,7 +118,6 @@ namespace Crosses
                 _cellPoints[cell] += GetMarkPointsForLine(sameMarksInCol, oppositeMarksInCol);
                 _cellPoints[cell] += GetMarkPointsForLine(sameMarksOnMajorDiag, oppositeMarksOnMajorDiag);
                 _cellPoints[cell] += GetMarkPointsForLine(sameMarksOnMinorDiag, oppositeMarksOnMinorDiag);
-                Debug.Log($"Analyze for cell {cell.CellType} : {_cellPoints[cell]}");
             }
             maxPoint = Mathf.Max(_cellPoints.Values.ToArray());
         }
@@ -126,24 +157,68 @@ namespace Crosses
             return _fieldController.AllCellDatas.First(x => x.CellType == randomType);
         }
 
+        private bool IsInComputerExceptions(out CellType bestMove)
+        {
+            bestMove = CellType.None;
+            if (_exceptionsForComputer.TryGetValue(_fieldController.GameSidesString, out CellType[] moves))
+            {
+                bestMove = moves.RandomObject();
+                return true;
+            }
+            return false;
+        }
+
+        private bool IsInPlayerExceptions(out CellType bestMove)
+        {
+            bestMove = CellType.None;
+            if (_exceptionsForPlayer.TryGetValue(_fieldController.GameSidesString, out CellType[] moves))
+            {
+                bestMove = moves.RandomObject();
+                return true;
+            }
+            return false;
+        }
+
+        private CellData GetBestMove()
+        {
+            switch (_checkSide)
+            {
+                case GameSides.Computer:
+                    if (IsInComputerExceptions(out CellType bestMoveForComputer))
+                    {
+                        return _fieldController.GetCellByType(bestMoveForComputer);
+                    }
+                    break;
+                case GameSides.Player:
+                    if(IsInPlayerExceptions(out CellType bestMoveForPlayer))
+                    {
+                        return _fieldController.GetCellByType(bestMoveForPlayer);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            GetCellPoints(out int maxPoints);
+            return _cellPoints.Where(x => x.Value == maxPoints).ToArray().RandomObject().Key;
+        }
+
         #endregion
 
 
         #region Public Methods
 
-        public CellData GetBestMove(GameFieldController fieldController, GameSides whosTurn, int turnIndex)
+        public CellData GetBestMove(GameSides whosTurn, int turnIndex)
         {
             _checkSide = whosTurn;
             _oppositeSide = _checkSide == GameSides.Player ? GameSides.Computer : GameSides.Player;
             switch (turnIndex)
             {
                 case 0:
-                    return fieldController.AvaliableCellDatas.RandomObject();
+                    return _fieldController.AvaliableCellDatas.RandomObject();
                 case 1:
-                    return GetBestSecondMove(fieldController.MarkedCellDatas[0].CellType);
+                    return GetBestSecondMove(_fieldController.MarkedCellDatas[0].CellType);
                 default:
-                    GetCellPoints(out int maxPoints);
-                    return _cellPoints.Where(x => x.Value == maxPoints).ToArray().RandomObject().Key;
+                    return GetBestMove();
             }
         }
 

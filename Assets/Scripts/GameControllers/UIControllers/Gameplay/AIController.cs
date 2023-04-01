@@ -78,8 +78,7 @@ namespace Crosses
 
         private void MakeTurnImpossibleDifficulty()
         {     
-            ComputerChoseCell?.Invoke(_analyzer.GetBestMove(_gameFieldController, GameSides.Computer, 
-                _roundController.TurnIndex));
+            ComputerChoseCell?.Invoke(_analyzer.GetBestMove(GameSides.Computer, _roundController.TurnIndex));
         }
 
         private float GetThinkingTime()

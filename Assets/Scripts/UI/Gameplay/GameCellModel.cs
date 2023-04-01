@@ -20,6 +20,7 @@ namespace Crosses
         [SerializeField] private CellType _cellType;
         [SerializeField] private Button _button;
         [SerializeField] private Image _image;
+        [SerializeField] private Image _parentImage;
 
         #endregion
 
@@ -29,6 +30,7 @@ namespace Crosses
         public CellType CellType => _cellType;
 		public Button Button => _button;
         public Image Image => _image;
+        public Image ParentImage => _parentImage;
 
         #endregion
 
