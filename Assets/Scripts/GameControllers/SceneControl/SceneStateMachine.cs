@@ -1,7 +1,9 @@
 using System;
 using Extensions;
 using DG.Tweening;
+#if UNITY_EDITOR
 using EditorExtensions;
+#endif
 
 
 namespace Crosses
@@ -90,6 +92,7 @@ namespace Crosses
         private void SetStartState()
         {
             CheckIfStatesArrayComplete();
+#if UNITY_EDITOR
             if (LevelSelectionHelper.IsLevelSelected)
             {
                 InitSceneSwitch((SceneStateNames)(LevelSelectionHelper.SelectedLevelIndex + 2)); // 2 - difference in indexes between array an enum of names  
@@ -98,6 +101,9 @@ namespace Crosses
             {
                 InitSceneSwitch(SceneStateNames.Welcome);
             }
+#else
+            InitSceneSwitch(SceneStateNames.Welcome);
+#endif
         }
 
         private void InitSceneSwitch(SceneStateNames stateName)
@@ -129,6 +135,6 @@ namespace Crosses
             CurrentSceneState?.ExitState();
         }
 
-        #endregion
+#endregion
     }
 }
