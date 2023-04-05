@@ -17,7 +17,7 @@ namespace Crosses
 
         #region Fields
 
-        [SerializeField] private CellType _cellType;
+        [SerializeField] private CellPlace _cellPlace;
         [SerializeField] private Button _button;
         [SerializeField] private Image _image;
         [SerializeField] private Image _parentImage;
@@ -27,7 +27,7 @@ namespace Crosses
 
         #region Properties
 
-        public CellType CellType => _cellType;
+        public CellPlace CellPlace => _cellPlace;
 		public Button Button => _button;
         public Image Image => _image;
         public Image ParentImage => _parentImage;

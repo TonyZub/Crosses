@@ -16,22 +16,16 @@ namespace Crosses
         #region Events
 
         public event Action<GameSides> ChangedFirstTurn;
-
-        #endregion
-
-
-        #region Fields
-
-        private readonly bool _isListening;
+        public event Action RoundRestarted;
+        public event Action DifficultyChanged;
 
         #endregion
 
 
         #region Constructor
 
-        public CheatController(bool isListening)
+        public CheatController()
         {
-            _isListening = isListening;
             SubscribeEvents();
         }
 
@@ -54,7 +48,14 @@ namespace Crosses
 
         private void CheckCheat()
         {
-            if(_isListening && Input.GetKey(KeyCode.N) && Input.GetKey(KeyCode.T))
+            CheckFirstTurnChange();
+            CheckRoundRestart();
+            CheckDifficultyChange();
+        }
+
+        private void CheckFirstTurnChange()
+        {
+            if (Input.GetKey(KeyCode.N) && Input.GetKey(KeyCode.T))
             {
                 if (Input.GetKeyDown(KeyCode.P))
                 {
@@ -67,6 +68,28 @@ namespace Crosses
                 else if (Input.GetKeyDown(KeyCode.R))
                 {
                     ChangedFirstTurn?.Invoke(GameSides.None);
+                }
+            }
+        }
+
+        private void CheckRoundRestart()
+        {
+            if(Input.GetKey(KeyCode.R) && Input.GetKey(KeyCode.E))
+            {
+                if (Input.GetKeyDown(KeyCode.S))
+                {
+                    RoundRestarted?.Invoke();
+                }              
+            }
+        }
+
+        private void CheckDifficultyChange()
+        {
+            if(Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.I))
+            {
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    DifficultyChanged?.Invoke();
                 }
             }
         }

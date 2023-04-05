@@ -9,14 +9,15 @@ namespace Crosses
         #region Events
 
         public event Action RoundStarted;
+        public event Action RoundRestarted;
         public event Action PlayerTurnStarted;
         public event Action PlayerTurnEnded;
         public event Action ComputerTurnStarted;
         public event Action ComputerTurnEnded;
         public event Action PlayerWon;
         public event Action ComputerWon;
-        public event Action<CellType[]> GotPlayerWinCombination;
-        public event Action<CellType[]> GotComputerWinCombination;
+        public event Action<WinCombinations> GotPlayerWinCombination;
+        public event Action<WinCombinations> GotComputerWinCombination;
         public event Action Draw;
 
         #endregion
@@ -39,6 +40,7 @@ namespace Crosses
         #region Properties
 
         public GameSides FirstTurnSide { get; private set; }
+        public Difficulty Difficulty { get; private set; }
         public int RoundIndex { get; private set; }
         public int TurnIndex { get; private set; }
         public int PlayerWinAmount { get; private set; }
@@ -57,8 +59,9 @@ namespace Crosses
             _markChoiseController = markChoiseController;
             _gameFieldController = new GameFieldController(_canvasModel, _markChoiseController, this);
             _winScreenController = new WinScreenController(_canvasModel, this);
-            _cheatController = new CheatController(true);
+            _cheatController = new CheatController();
             FirstTurnSide = _canvasModel.FirstTurnSide;
+            Difficulty = _canvasModel.Difficulty;
             SubcribeEvents();
         }
 
@@ -74,6 +77,8 @@ namespace Crosses
             _gameFieldController.ComputerChoseCell += OnComputerTurnEnded;
             _winScreenController.WinScreenClosed += StartRound;
             _cheatController.ChangedFirstTurn += OnFirstTurnChangedByCheat;
+            _cheatController.RoundRestarted += RestartRound;
+            _cheatController.DifficultyChanged += ChangeDifficulty;
             RoundStarted += PrintRoundInfo;
             PlayerTurnStarted += PrintRoundInfo;
             PlayerTurnEnded += PrintRoundInfo;
@@ -90,6 +95,8 @@ namespace Crosses
             PlayerTurnEnded -= PrintRoundInfo;
             ComputerTurnStarted -= PrintRoundInfo;
             ComputerTurnEnded -= PrintRoundInfo;
+            _cheatController.DifficultyChanged -= ChangeDifficulty;
+            _cheatController.RoundRestarted -= RestartRound;
             _cheatController.ChangedFirstTurn -= OnFirstTurnChangedByCheat;
             _gameFieldController.PlayerChoseCell -= OnPlayerTurnEnded;
             _gameFieldController.ComputerChoseCell -= OnComputerTurnEnded;
@@ -144,6 +151,21 @@ namespace Crosses
             MakeFirstTurn();
         }
 
+        private void RestartRound()
+        {
+            DecideWhosTurnFirst();
+            TurnIndex = 0;
+            RoundRestarted?.Invoke();
+            MakeFirstTurn();
+        }
+
+        private void ChangeDifficulty()
+        {
+            Difficulty = Difficulty == Difficulty.Impossible ? Difficulty.Random : Difficulty.Impossible;
+            PrintMessage($"Выбрана сложность: {Difficulty}");
+            _cheatMessageTween = DOVirtual.DelayedCall(CheatController.MESSAGE_DELAY_TIME, PrintRoundInfo);
+        }
+
         private void DecideWhosTurnFirst()
         {
             switch (FirstTurnSide)
@@ -186,7 +208,7 @@ namespace Crosses
 
         private void ContinueRound()
         {
-            if(FieldAnalyzer.IsEndGame(_gameFieldController, out CellType[] winCombination, out GameSides winner))
+            if(FieldAnalyzer.IsEndGame(_gameFieldController, out WinCombinations winCombination, out GameSides winner))
             {
                 switch (winner)
                 {

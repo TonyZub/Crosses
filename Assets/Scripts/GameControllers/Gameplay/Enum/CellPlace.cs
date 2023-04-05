@@ -1,8 +1,7 @@
 namespace Crosses
 {
-	public enum CellType
+	public enum CellPlace
 	{
-		None,
 		TopLeft,
 		TopCenter,
 		TopRight,
