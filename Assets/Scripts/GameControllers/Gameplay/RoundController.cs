@@ -162,7 +162,7 @@ namespace Crosses
         private void ChangeDifficulty()
         {
             Difficulty = Difficulty == Difficulty.Impossible ? Difficulty.Random : Difficulty.Impossible;
-            PrintMessage($"Выбрана сложность: {Difficulty}");
+            PrintMessage($"Выбрана сложность: {(Difficulty == Difficulty.Impossible ? "попускательная" : "чиловая")}");
             _cheatMessageTween = DOVirtual.DelayedCall(CheatController.MESSAGE_DELAY_TIME, PrintRoundInfo);
         }
 

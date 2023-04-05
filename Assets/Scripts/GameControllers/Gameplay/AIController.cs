@@ -56,7 +56,7 @@ namespace Crosses
 
         private void OnComputerTurnStarted()
         {
-            switch (_canvasModel.Difficulty)
+            switch (_roundController.Difficulty)
             {
                 case Difficulty.None:
                     break;
