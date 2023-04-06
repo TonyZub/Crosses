@@ -191,6 +191,14 @@ PrefabInstance:
       propertyPath: _firstTurnSide
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _computerMaxThinkingTime
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 369738930, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _computerMinThinkingTime
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1100067743, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -226,6 +234,10 @@ PrefabInstance:
     - target: {fileID: 3449855873723165879, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8274106176265514520, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
+      propertyPath: _showingTime
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8972195899958584160, guid: a20d8f04aa56d8a42872fbf9ac1d687b, type: 3}
       propertyPath: m_Name

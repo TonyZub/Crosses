@@ -10,6 +10,8 @@ namespace Crosses
 	{
         #region Constants
 
+        private const int EXTREME_POINTS = 1000;
+
         public static readonly Dictionary<WinCombinations, CellPlace[]> EndCombinations = new Dictionary<WinCombinations, CellPlace[]>()
         {
             { WinCombinations.TopRow, new CellPlace[3]{ CellPlace.TopLeft, CellPlace.TopCenter, CellPlace.TopRight} },
@@ -106,11 +108,7 @@ namespace Crosses
 
             public readonly int[] MarksAmountsForCheckSide;
             public readonly int[] MarksAmountsForOppositeSide;
-            public readonly int[] MarksPointsForCheckSide;
-            public readonly int[] MarksPointsForOppositeSide;
 
-            public readonly int PositionPointsForCheckSide;
-            public readonly int PositionPointsForOppositeSide;
             public readonly int AmountOfPrewinsForCheckSide;
             public readonly int AmountOfPrewinsForOppositeSide;
 
@@ -125,8 +123,8 @@ namespace Crosses
             public readonly MoveAnalysis PreviousNode;
             public readonly List<MoveAnalysis> NextNodes;
 
-            public int Points => PositionPointsForCheckSide - PositionPointsForOppositeSide -
-                (AmountOfPrewinsForOppositeSide > 1 ? 1000 : 0) + (AmountOfPrewinsForCheckSide > 1 ? 1000 : 0);
+            public int Points => (WhosNextTurn == CheckSide ? (AmountOfPrewinsForCheckSide * AmountOfPrewinsForCheckSide ) :
+                (-(AmountOfPrewinsForOppositeSide * AmountOfPrewinsForOppositeSide) * EXTREME_POINTS));
             public bool IsEnd => IsCheckSideWon || IsOppositeSideWon || NextNodes.Count == 0;
 
             public MoveAnalysis(MoveAnalysis previousNode, CellPlace cellPlace, string previousComposition, 
@@ -144,16 +142,13 @@ namespace Crosses
                 int[][] marksAmounts = GetSideMarksCountsArray(Field, checkSide, oppositeSide);
                 MarksAmountsForCheckSide = marksAmounts[0];
                 MarksAmountsForOppositeSide = marksAmounts[1];
-                MarksPointsForCheckSide = GetPositionPointsForSide(MarksAmountsForCheckSide);
-                MarksPointsForOppositeSide = GetPositionPointsForSide(MarksAmountsForOppositeSide);
-                PositionPointsForCheckSide = MarksPointsForCheckSide.Aggregate((a, b) => a + b);
-                PositionPointsForOppositeSide = MarksPointsForOppositeSide.Aggregate((a, b) => a + b);
-                CheckSideHasPrewin = HasPrewin(MarksAmountsForCheckSide, MarksAmountsForOppositeSide, out WinCombinations[] CheckSidePrewins);
+                CheckSideHasPrewin = HasPrewin(MarksAmountsForCheckSide, MarksAmountsForOppositeSide, out WinCombinations[] CheckSidePrewins);;
                 OppositeSideHasPrewin = HasPrewin(MarksAmountsForOppositeSide, MarksAmountsForCheckSide, out WinCombinations[] OppositeSidePrewins);
                 IsCheckSideWon = HasWin(MarksAmountsForCheckSide, MarksAmountsForOppositeSide, out WinCombinations[] checkWinCombinations);
                 IsOppositeSideWon = HasWin(MarksAmountsForOppositeSide, MarksAmountsForCheckSide, out WinCombinations[] oppositeWinCombinations);
                 AmountOfPrewinsForCheckSide = CheckSidePrewins.Length;
                 AmountOfPrewinsForOppositeSide = OppositeSidePrewins.Length;
+
                 NextNodes = new List<MoveAnalysis>();
                 if (IsCheckSideWon || IsOppositeSideWon) return;
                 if (WhosNextTurn == CheckSide && OppositeSideHasPrewin)
@@ -177,13 +172,13 @@ namespace Crosses
 
             public float GetAveragePoints()
             {
-                if(NextNodes.Count == 1)
+                if (NextNodes.Count == 1)
                 {
                     return (Points + NextNodes[0].GetAveragePoints()) / 2;
                 }
-                else if(NextNodes.Count > 0)
+                else if (NextNodes.Count > 0)
                 {
-                    return (Points + NextNodes.Select(x => x.GetAveragePoints()).Aggregate((a, b) => a + b) / 
+                    return (Points + NextNodes.Select(x => x.GetAveragePoints()).Aggregate((a, b) => a + b) /
                         NextNodes.Count) / 2;
                 }
                 else
@@ -267,7 +262,6 @@ namespace Crosses
                 return fieldAnalysis.PrewinPreventionPlace;
             }
                 
-
             var movesNodes = new List<MoveAnalysis>();
 
             foreach (var cell in _fieldController.Field.AvaliableCellDatas)
@@ -281,15 +275,6 @@ namespace Crosses
             foreach (var node in movesNodes)
             {
                 var nodePoints = node.GetAveragePoints();
-                //MessageLogger.Log($"Points for move {node.CellPlace} - {nodePoints}");
-                //foreach (var inner in node.NextNodes)
-                //{
-                //    MessageLogger.Log($"Points for inner {inner.CellPlace} - {inner.GetAveragePoints()} {inner.AmountOfPrewinsForCheckSide}  {inner.AmountOfPrewinsForOppositeSide}");
-                //    foreach (var deep in inner.NextNodes)
-                //    {
-                //        MessageLogger.Log($"Points for deep {deep.CellPlace} - {deep.GetAveragePoints()}");
-                //    }
-                //}
                 if (maxPoints < nodePoints)
                 {
                     bestPlace = node.CellPlace;
@@ -354,16 +339,6 @@ namespace Crosses
             oppositeSideMarksCount = markedCellsInColumn.Where(x => field.GetSideForCell(x) == oppositeSide).Count();
         }
         
-        public static int[] GetPositionPointsForSide(int[] marksCounts)
-        {
-            int[] points = new int[8];
-            for (int i = 0; i < points.Length; i++)
-            {
-                points[i] = marksCounts[i] * marksCounts[i];
-            }
-            return points;
-        }
-
         public static bool HasPrewin(int[] sideMarksCount, int[] oppositeMarksCount, out WinCombinations[] combinations)
         {
             return HasCombinationForAmount(sideMarksCount, oppositeMarksCount, 2, out combinations);
