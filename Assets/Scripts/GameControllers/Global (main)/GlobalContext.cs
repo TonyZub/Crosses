@@ -26,6 +26,7 @@ namespace Crosses
         public GlobalContext() : base()
         {
             CreateDIContainer();
+            CreateGlobalServices();
             CreateSceneStateMachine();
         }
 
@@ -37,6 +38,11 @@ namespace Crosses
         private void CreateDIContainer()
         {
             _diContainer = new Dictionary<Type, object>();
+        }
+
+        private void CreateGlobalServices()
+        {
+            RegisterDependency(new GlobalServices());
         }
 
         private void CreateSceneStateMachine()
@@ -83,6 +89,7 @@ namespace Crosses
 
         protected override void Dispose()
         {
+            DisposeAndUnregisterDependency<GlobalServices>();
             base.Dispose();
         }
 

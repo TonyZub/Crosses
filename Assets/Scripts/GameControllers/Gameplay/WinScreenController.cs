@@ -9,7 +9,7 @@ namespace Crosses
         #region Constants
 
         private const string PLAYER_WON_TEXT = "бш бшхцпюкх!";
-        private const string COMPUTER_WON_TEXT = "бш оносыемш!";
+        private const string COMPUTER_WON_TEXT = "бш опнхцпюкх!";
         private const string DRAW_TEXT = "мхвэъ!";
 
         private const float MIN_GROUP_ALPHA = 0f;
