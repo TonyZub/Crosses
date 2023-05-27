@@ -19,13 +19,14 @@ namespace Crosses
 
         protected override void OnSceneLoadingComplete()
         {
-            //TODO
+            GlobalContext.Instance.RegisterDependency(new TransitionalScreenController(ObjectFinder.
+                FindObjectOfType<VideoCanvasModel>(true)));
             base.OnSceneLoadingComplete();
         }
 
         public override void ExitState()
         {
-            //TODO
+            GlobalContext.Instance.DisposeAndUnregisterDependency<TransitionalScreenController>();
         }
 
         #endregion

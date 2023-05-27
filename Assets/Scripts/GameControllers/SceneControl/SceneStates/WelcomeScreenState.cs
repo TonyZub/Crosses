@@ -26,7 +26,7 @@ namespace Crosses
 
         public override void ExitState()
         {
-            GlobalContext.Instance.UnregisterDependency<WelcomeScreenController>();
+            GlobalContext.Instance.DisposeAndUnregisterDependency<WelcomeScreenController>();
         }
 
         #endregion

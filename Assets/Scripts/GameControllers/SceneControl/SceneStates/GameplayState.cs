@@ -26,7 +26,7 @@ namespace Crosses
 
         public override void ExitState()
         {
-            GlobalContext.Instance.UnregisterDependency<GameplayController>();
+            GlobalContext.Instance.DisposeAndUnregisterDependency<GameplayController>();
         }
 
         #endregion

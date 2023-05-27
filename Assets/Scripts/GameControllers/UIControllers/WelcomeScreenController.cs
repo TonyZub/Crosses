@@ -124,6 +124,7 @@ namespace Crosses
                 _canvasModel.AlertText.text = "¬ведите свой возраст";
                 return false;
             }
+            _canvasModel.AlertText.text = string.Empty;
             return true;
         }
 
