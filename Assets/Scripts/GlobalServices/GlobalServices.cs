@@ -13,7 +13,7 @@ namespace Crosses
 		#region Properties
 
 		public ScreenOrientationService ScreenOrientationService => _screenOrientationService;
-		public ResearchDataService ResearchDatService => _researchDataService;
+		public ResearchDataService ResearchDataService => _researchDataService;
 
 		#endregion
 

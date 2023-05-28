@@ -79,7 +79,7 @@ namespace Crosses
                 new WelcomeScreenState(SceneStateNames.Welcome, SceneNames.WelcomeScreen),
                 new GameplayState(SceneStateNames.Gameplay, SceneNames.Gameplay),
                 new TransitionState(SceneStateNames.Transition, SceneNames.TransitionalScreen),
-                new MetodicState(SceneStateNames.Metodic, SceneNames.MetodicScreen),
+                new MethodicState(SceneStateNames.Methodic, SceneNames.MethodicScreen),
                 new ThanksState(SceneStateNames.Thanks, SceneNames.ThanksScreen),
             };
         }
@@ -99,7 +99,7 @@ namespace Crosses
             }
             else
             {
-                InitSceneSwitch(SceneStateNames.Transition);
+                InitSceneSwitch(SceneStateNames.Methodic);
             }
 #else
             InitSceneSwitch(SceneStateNames.Welcome);

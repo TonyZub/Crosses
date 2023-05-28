@@ -103,6 +103,7 @@ namespace Crosses
             if (AreFieldsValidated())
             {
                 _canvasModel.MoveNextBtn.interactable = false;
+                StoreUserData();
                 SceneStateMachine.Instance.SetState(SceneStateNames.Gameplay);
             }
         }
@@ -126,6 +127,14 @@ namespace Crosses
             }
             _canvasModel.AlertText.text = string.Empty;
             return true;
+        }
+
+        private void StoreUserData()
+        {
+            GlobalContext.Instance.GetDependency<GlobalServices>().ResearchDataService.
+                SetUserName(_canvasModel.NameInput.text).
+                SetUserSex(_canvasModel.MaleToggle.isOn ? "male" : "female").
+                SetUserAge((int.Parse(_canvasModel.AgeInput.text)));
         }
 
         private void SwitchScreens()

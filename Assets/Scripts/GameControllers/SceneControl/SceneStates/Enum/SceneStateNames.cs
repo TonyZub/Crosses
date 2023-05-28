@@ -6,7 +6,7 @@ namespace Crosses
 		Welcome				= 1,
 		Gameplay			= 2,
 		Transition			= 3,
-		Metodic				= 4,
+        Methodic			= 4,
 		Thanks				= 5
 	}
 }

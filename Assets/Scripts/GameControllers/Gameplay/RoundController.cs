@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System;
+using Random = UnityEngine.Random;
 
 
 namespace Crosses
@@ -30,9 +31,12 @@ namespace Crosses
         private readonly GameFieldController _gameFieldController;
         private readonly WinScreenController _winScreenController;
         private readonly CheatController _cheatController;
+        private readonly ResearchDataService _researchDataService;
 
         private Tween _roundTween;
         private Tween _cheatMessageTween;
+
+        private DateTime _roundStartTime;
 
         #endregion
 
@@ -60,6 +64,7 @@ namespace Crosses
             _gameFieldController = new GameFieldController(_canvasModel, _markChoiseController, this);
             _winScreenController = new WinScreenController(_canvasModel, this);
             _cheatController = new CheatController();
+            _researchDataService = GlobalContext.Instance.GetDependency<ResearchDataService>();
             FirstTurnSide = _canvasModel.FirstTurnSide;
             Difficulty = _canvasModel.Difficulty;
             SubcribeEvents();
@@ -72,6 +77,7 @@ namespace Crosses
 
         private void SubcribeEvents()
         {
+            _canvasModel.GiveUpBtn.onClick.AddListener(Surrender);
             _markChoiseController.MarkChosen += OnMarkChosen;
             _gameFieldController.PlayerChoseCell += OnPlayerTurnEnded;
             _gameFieldController.ComputerChoseCell += OnComputerTurnEnded;
@@ -101,6 +107,7 @@ namespace Crosses
             _gameFieldController.PlayerChoseCell -= OnPlayerTurnEnded;
             _gameFieldController.ComputerChoseCell -= OnComputerTurnEnded;
             _winScreenController.WinScreenClosed -= StartRound;
+            _canvasModel.GiveUpBtn.onClick.RemoveAllListeners();
         }
 
         private void OnMarkChosen()
@@ -144,11 +151,34 @@ namespace Crosses
 
         private void StartRound()
         {
+            _roundStartTime = DateTime.Now;
             DecideWhosTurnFirst();
             RoundIndex += 1;
+            CheckIfCanSurrender();
             TurnIndex = 0;
             RoundStarted?.Invoke();
             MakeFirstTurn();
+        }
+
+        private void CheckIfCanSurrender()
+        {
+            if(RoundIndex > _canvasModel.MinRounds)
+            {
+                _canvasModel.GiveUpBtn.gameObject.SetActive(true);
+            }
+        }
+
+        private void Surrender()
+        {
+            _researchDataService.CountRoundsInfo();
+            if(Random.value > 0.5f)
+            {
+                SceneStateMachine.Instance.SetState(SceneStateNames.Methodic);
+            }
+            else
+            {
+                SceneStateMachine.Instance.SetState(SceneStateNames.Transition);
+            }
         }
 
         private void RestartRound()
@@ -210,18 +240,22 @@ namespace Crosses
         {
             if(FieldAnalyzer.IsEndGame(_gameFieldController, out WinCombinations winCombination, out GameSides winner))
             {
+                var roundTime = (float)(DateTime.Now - _roundStartTime).TotalSeconds;
                 switch (winner)
                 {
                     case GameSides.None:
+                        _researchDataService.AddRoundInfo(GameSides.None, roundTime);
                         DrawAmounts++;
                         Draw?.Invoke();
                         break;
                     case GameSides.Player:
+                        _researchDataService.AddRoundInfo(GameSides.Player, roundTime);
                         PlayerWinAmount++;
                         GotPlayerWinCombination?.Invoke(winCombination);
                         PlayerWon?.Invoke();
                         break;
                     case GameSides.Computer:
+                        _researchDataService.AddRoundInfo(GameSides.Computer, roundTime);
                         ComputerWinAmounts++;
                         GotComputerWinCombination?.Invoke(winCombination);
                         ComputerWon?.Invoke();

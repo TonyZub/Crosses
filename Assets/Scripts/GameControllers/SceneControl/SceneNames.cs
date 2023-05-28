@@ -6,7 +6,7 @@ namespace Crosses
 		WelcomeScreen		= 1,
 		Gameplay			= 2,
 		TransitionalScreen	= 3,
-		MetodicScreen		= 4,
+		MethodicScreen		= 4,
 		ThanksScreen		= 5,
 	}
 }

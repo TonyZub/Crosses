@@ -1,10 +1,10 @@
 namespace Crosses
 {
-    public sealed class MetodicState : BaseSceneState
+    public sealed class MethodicState : BaseSceneState
     {
         #region Constructor
 
-        public MetodicState(SceneStateNames stateName, SceneNames sceneName) : base(stateName, sceneName) { }
+        public MethodicState(SceneStateNames stateName, SceneNames sceneName) : base(stateName, sceneName) { }
 
         #endregion
 
@@ -19,13 +19,14 @@ namespace Crosses
 
         protected override void OnSceneLoadingComplete()
         {
-            //TODO
+            GlobalContext.Instance.RegisterDependency(new MethodicScreenController(ObjectFinder.
+                FindObjectOfType<MethodicScreenCanvasModel>(true)));
             base.OnSceneLoadingComplete();
         }
 
         public override void ExitState()
         {
-            //TODO
+            GlobalContext.Instance.DisposeAndUnregisterDependency<MethodicScreenController>();
         }
 
         #endregion

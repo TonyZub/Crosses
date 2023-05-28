@@ -9,6 +9,7 @@ namespace Crosses
 
         private static Data _data;
         private static UIData _uiData;
+        private static MethodicData _methodicData;
 
         #endregion
 
@@ -36,6 +37,18 @@ namespace Crosses
                     _uiData = Resources.Load<UIData>(typeof(UIData).Name);
                 }
                 return _uiData;
+            }
+        }
+
+        public static MethodicData MethodicData
+        {
+            get
+            {
+                if(_methodicData == null)
+                {
+                    _methodicData = Resources.Load<MethodicData>(typeof(MethodicData).Name);
+                }
+                return _methodicData;
             }
         }
 

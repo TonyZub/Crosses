@@ -20,10 +20,14 @@ namespace Crosses
 		[SerializeField] private RectTransform _containerPanel;
 		[SerializeField] private TMP_InputField _feedbackinput;
 		[SerializeField] private TMP_Text _alertText;
+		[SerializeField] private TMP_Text _inputFeedbackPlaceholderTxt;
+		[SerializeField] private TMP_Text _inputFeedbackTxt;
 		[SerializeField] private Button _moveNextBtn;
 
 		[SerializeField] private Vector2 _containerAnchorsForVerticalScreen;
 		[SerializeField] private Vector2 _containerAnchorsForHorizontalScreen;
+		[SerializeField] private Vector2 _inputFeedbackFontsSizesForVerticalScreen;
+		[SerializeField] private Vector2 _inputFeedbackFontsSizesForHorizontalScreen;
 		[SerializeField] private float _panelsSwitchDuration;
 
 		#endregion
@@ -40,10 +44,14 @@ namespace Crosses
 		public RectTransform ContainerPanel => _containerPanel;
 		public TMP_InputField FeedbackInput => _feedbackinput;
 		public TMP_Text AlertText => _alertText;
+		public TMP_Text InputFeedbackPlaceholderTxt => _inputFeedbackPlaceholderTxt;
+		public TMP_Text InputFeedbackTxt => _inputFeedbackTxt;
 		public Button MoveNextBtn => _moveNextBtn;
 
 		public Vector2 ContainerAnchorsForVerticalScreen => _containerAnchorsForVerticalScreen;
 		public Vector2 ContainerAnchorsForHorizontalScreen => _containerAnchorsForHorizontalScreen;
+		public Vector2 InputFeedbackFontSizesForVerticalScreen => _inputFeedbackFontsSizesForVerticalScreen;
+		public Vector2 InputFeedbackFontSizesForHorizontalScreen => _inputFeedbackFontsSizesForHorizontalScreen;
 		public float PanelsSwitchDuration => _panelsSwitchDuration;
 
 		#endregion

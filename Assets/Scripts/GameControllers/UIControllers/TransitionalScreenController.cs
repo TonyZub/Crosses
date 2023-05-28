@@ -75,6 +75,10 @@ namespace Crosses
                     _canvasModel.ContainerPanel.anchorMin.y);
                 _canvasModel.ContainerPanel.anchorMax = new Vector2(_canvasModel.ContainerAnchorsForHorizontalScreen.y,
                     _canvasModel.ContainerPanel.anchorMax.y);
+                _canvasModel.InputFeedbackPlaceholderTxt.fontSizeMin = _canvasModel.InputFeedbackFontSizesForHorizontalScreen.x;
+                _canvasModel.InputFeedbackPlaceholderTxt.fontSizeMax = _canvasModel.InputFeedbackFontSizesForHorizontalScreen.y;
+                _canvasModel.InputFeedbackTxt.fontSizeMin = _canvasModel.InputFeedbackFontSizesForHorizontalScreen.x;
+                _canvasModel.InputFeedbackTxt.fontSizeMax = _canvasModel.InputFeedbackFontSizesForHorizontalScreen.y;
             }
             else
             {
@@ -82,6 +86,10 @@ namespace Crosses
                     _canvasModel.ContainerPanel.anchorMin.y);
                 _canvasModel.ContainerPanel.anchorMax = new Vector2(_canvasModel.ContainerAnchorsForVerticalScreen.y,
                     _canvasModel.ContainerPanel.anchorMax.y);
+                _canvasModel.InputFeedbackPlaceholderTxt.fontSizeMin = _canvasModel.InputFeedbackFontSizesForVerticalScreen.x;
+                _canvasModel.InputFeedbackPlaceholderTxt.fontSizeMax = _canvasModel.InputFeedbackFontSizesForVerticalScreen.y;
+                _canvasModel.InputFeedbackTxt.fontSizeMin = _canvasModel.InputFeedbackFontSizesForVerticalScreen.x;
+                _canvasModel.InputFeedbackTxt.fontSizeMax = _canvasModel.InputFeedbackFontSizesForVerticalScreen.y;
             }
         }
 
@@ -102,13 +110,12 @@ namespace Crosses
 
         private void SetState(TransitionStates state)
         {
-            switch (state)
+            _currentState = state;
+            switch (_currentState)
             {
                 case TransitionStates.Intro:
-                    _currentState = TransitionStates.Intro;
                     break;
                 case TransitionStates.FirstVideo:
-                    _currentState = TransitionStates.FirstVideo;
                     SwitchCanvasGroups(_canvasModel.IntroCanvasGroup, _canvasModel.VideoCanvasGroup);
                     _canvasModel.VideoPlayer.clip = _canvasModel.FirstVideoClip;
                     _canvasModel.VideoPlayer.Play();
@@ -116,14 +123,12 @@ namespace Crosses
                     _canvasModel.MoveNextBtn.gameObject.SetActive(false);
                     break;
                 case TransitionStates.SecondVideo:
-                    _currentState = TransitionStates.SecondVideo;
                     _canvasModel.VideoPlayer.Stop();
                     _canvasModel.VideoPlayer.clip = _canvasModel.SecondVideoClip;
                     _canvasModel.VideoPlayer.Play();
                     _canvasModel.VideoPlayer.loopPointReached += OnSecondVideoEnded;
                     break;
                 case TransitionStates.Feedback:
-                    _currentState = TransitionStates.Feedback;
                     _canvasModel.VideoPlayer.Stop();
                     _canvasModel.MoveNextBtn.gameObject.SetActive(true);
                     SwitchCanvasGroups(_canvasModel.VideoCanvasGroup, _canvasModel.FeedbackCanvasGroup);
@@ -163,12 +168,16 @@ namespace Crosses
 
         private void TryMoveToNextScene()
         {
-            if (IsFeedbackWritten()) MoveToNextScene();
+            if (IsFeedbackWritten())
+            {
+                StoreTransitionalData();
+                MoveToNextScene();
+            }       
         }
 
         private void MoveToNextScene()
         {
-            SceneStateMachine.Instance.SetState(SceneStateNames.Metodic);
+            SceneStateMachine.Instance.SetState(SceneStateNames.Methodic);
         }
 
         private bool IsFeedbackWritten()
@@ -180,6 +189,12 @@ namespace Crosses
             }
             _canvasModel.AlertText.text = string.Empty;
             return true;
+        }
+
+        private void StoreTransitionalData()
+        {
+            GlobalContext.Instance.GetDependency<GlobalServices>().ResearchDataService.
+                SetVideoFeedback(_canvasModel.AlertText.text);
         }
 
         private void CheckSkipVideo()
