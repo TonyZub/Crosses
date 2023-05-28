@@ -64,7 +64,7 @@ namespace Crosses
             _gameFieldController = new GameFieldController(_canvasModel, _markChoiseController, this);
             _winScreenController = new WinScreenController(_canvasModel, this);
             _cheatController = new CheatController();
-            _researchDataService = GlobalContext.Instance.GetDependency<ResearchDataService>();
+            _researchDataService = GlobalContext.Instance.GetDependency<GlobalServices>().ResearchDataService;
             FirstTurnSide = _canvasModel.FirstTurnSide;
             Difficulty = _canvasModel.Difficulty;
             SubcribeEvents();

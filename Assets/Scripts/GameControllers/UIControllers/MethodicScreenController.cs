@@ -1,5 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Crosses
@@ -8,6 +10,8 @@ namespace Crosses
 	{
         #region PrivateData
 
+        private const int MAX_METHODIC_POINT = 8;
+
         private enum MethodicStates
         {
             Instruction,
@@ -15,6 +19,20 @@ namespace Crosses
             SecondMetodic,
             DataInput,
             DataRequestCall
+        }
+
+        private struct MethodicPart
+        {
+            public MethodicElementsParts Part;
+            public int Point;
+            public bool IsReversed;
+
+            public MethodicPart(MethodicElementsParts part, int point, bool isReversed)
+            {
+                Part = part;
+                IsReversed = isReversed;
+                Point = IsReversed ? MAX_METHODIC_POINT - point : point;
+            }
         }
 
         #endregion
@@ -32,6 +50,8 @@ namespace Crosses
         private Sequence _canvasGroupSequence;
         private MethodicStates _currentState;
 
+        private List<MethodicPart> _mainMethodicAnswers;
+
         private int _mainMethodicQuestion;
         private int _secondMethodicQuestion;
 
@@ -46,6 +66,7 @@ namespace Crosses
             var globalServices = GlobalContext.Instance.GetDependency<GlobalServices>();
             _screenOrientationService = globalServices.ScreenOrientationService;
             _researchDataService = globalServices.ResearchDataService;
+            _mainMethodicAnswers = new List<MethodicPart>();
             AdaptContainer(_screenOrientationService.ScreenOrientation);
             SubscribeEvents();
             SetState(MethodicStates.Instruction);
@@ -62,12 +83,12 @@ namespace Crosses
             _screenOrientationService.ScreenOrientationChanged += AdaptContainer;
             for (int i = 0; i < _canvasModel.FirstMethodicButtons.Length; i++)
             {
-                var index = i;
+                var index = _canvasModel.FirstMethodicButtons.Length - i;
                 _canvasModel.FirstMethodicButtons[i].onClick.AddListener(() => OnMainMethodicButtonPressed(index));
             }
             for (int i = 0; i < _canvasModel.SecondMethodicButtons.Length; i++)
             {
-                var index = i;
+                var index = _canvasModel.SecondMethodicButtons.Length - i - 1;
                 _canvasModel.SecondMethodicButtons[i].onClick.AddListener(() => OnSecondMethodicButtonPressed(index));
             }
             SceneStateMachine.Instance.OnBeforeStateChange += UnsubscribeEvents;
@@ -151,6 +172,7 @@ namespace Crosses
                     SwitchCanvasGroups(_canvasModel.InstructionCanvasGroup, _canvasModel.MainMethodicCanvasGroup);
                     break;
                 case MethodicStates.SecondMetodic:
+                    StoreTotalForMainMethodic();
                     _secondMethodicQuestion = 0;
                     SetSecondMethodicQuestion(_secondMethodicQuestion);
                     UpdateSecondMethodicFillable();
@@ -196,32 +218,52 @@ namespace Crosses
 
         private void OnMainMethodicButtonPressed(int points)
         {
-            Debug.Log("main pressed " + points);
             if (_currentState != MethodicStates.FirstMetodic) return;
+            _mainMethodicAnswers.Add(new MethodicPart(Data.MethodicData.MethodicElements[_mainMethodicQuestion].ElementPart,
+                points, Data.MethodicData.MethodicElements[_mainMethodicQuestion].IsReversed));
+            _researchDataService.AddFirstMethodicAnswer(points);
             if (_mainMethodicQuestion >= Data.MethodicData.MethodicElements.Length - 1)
             {
                 SetState(MethodicStates.SecondMetodic);
             }
             else
             {
-                SetMainMethodicQuestion(_mainMethodicQuestion);
                 _mainMethodicQuestion++;
+                SetMainMethodicQuestion(_mainMethodicQuestion);
                 UpdateFirstMethodicFillable();
             }
         }
 
+        private float CountTotalForPart(MethodicElementsParts part)
+        {
+            var elements = _mainMethodicAnswers.Where(x => x.Part == part).ToArray();
+            float totalPoints = 0f;
+            for (int i = 0; i < elements.Length; i++)
+            {
+                //if (elements[i].IsReversed) elements[i].Point = MAX_METHODIC_POINT - elements[i].Point;
+                totalPoints += elements[i].Point;
+            }
+            return totalPoints / 10f;
+        }
+
+        private void StoreTotalForMainMethodic()
+        {
+            _researchDataService.SetFirstMethodicResults(CountTotalForPart(MethodicElementsParts.Health),
+                CountTotalForPart(MethodicElementsParts.Activity), CountTotalForPart(MethodicElementsParts.Mood));
+        }
+
         private void OnSecondMethodicButtonPressed(int points)
         {
-            Debug.Log("second pressed " + points);
             if (_currentState != MethodicStates.SecondMetodic) return;
+            _researchDataService.AddSecondMethodicAnswer(points);
             if (_secondMethodicQuestion >= Data.MethodicData.MethodicQuestions.Length - 1)
             {
                 SetState(MethodicStates.DataInput);
             }
             else
             {
-                SetSecondMethodicQuestion(_secondMethodicQuestion);
                 _secondMethodicQuestion++;
+                SetSecondMethodicQuestion(_secondMethodicQuestion);
                 UpdateSecondMethodicFillable();
             }
         }
@@ -244,13 +286,16 @@ namespace Crosses
 
         private void MakeRequestCall()
         {
+            _researchDataService.SetEmail(_canvasModel.EmailInput.text);
+            _researchDataService.SetTotalFeedback(_canvasModel.FeedbackInput.text);
             _canvasModel.PreloaderPanel.gameObject.SetActive(true);
-            DOVirtual.DelayedCall(5f, MoveToNextScene);
+            DOVirtual.DelayedCall(5f, OnRequestCallback);
         }
 
         private void OnRequestCallback()
         {
-
+            Debug.Log(_researchDataService.GetDataJSON()); // TODO call post request
+            MoveToNextScene();
         }
 
         private void MoveToNextScene()

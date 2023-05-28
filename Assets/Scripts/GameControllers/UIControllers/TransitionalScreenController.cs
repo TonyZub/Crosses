@@ -194,7 +194,7 @@ namespace Crosses
         private void StoreTransitionalData()
         {
             GlobalContext.Instance.GetDependency<GlobalServices>().ResearchDataService.
-                SetVideoFeedback(_canvasModel.AlertText.text);
+                SetVideoFeedback(_canvasModel.FeedbackInput.text);
         }
 
         private void CheckSkipVideo()
