@@ -2,6 +2,9 @@ using UnityEngine;
 using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System;
 
 
 namespace Crosses
@@ -10,6 +13,7 @@ namespace Crosses
 	{
         #region PrivateData
 
+        private const string REQUEST_URL = "https://script.google.com/macros/s/AKfycbxenGhlPVwbgWQqMW3rzN8jIs5TuWVVUePvT0W2cR1SH-sPkOvBUhhUxDF-OAmVh2LS/exec?func=AddRecord";
         private const int MAX_METHODIC_POINT = 8;
 
         private enum MethodicStates
@@ -19,6 +23,11 @@ namespace Crosses
             SecondMetodic,
             DataInput,
             DataRequestCall
+        }
+
+        private class ObjectResponse
+        {
+            public bool isSuccess;
         }
 
         private struct MethodicPart
@@ -43,6 +52,7 @@ namespace Crosses
         private readonly MethodicScreenCanvasModel _canvasModel;
         private readonly ScreenOrientationService _screenOrientationService;
         private readonly ResearchDataService _researchDataService;
+        private readonly HttpClient _client;
 
         private CanvasGroup _closingGroup;
         private CanvasGroup _openingGroup;
@@ -67,6 +77,7 @@ namespace Crosses
             _screenOrientationService = globalServices.ScreenOrientationService;
             _researchDataService = globalServices.ResearchDataService;
             _mainMethodicAnswers = new List<MethodicPart>();
+            _client = new HttpClient();
             AdaptContainer(_screenOrientationService.ScreenOrientation);
             SubscribeEvents();
             SetState(MethodicStates.Instruction);
@@ -152,6 +163,9 @@ namespace Crosses
                     SetState(MethodicStates.FirstMetodic);
                     break;
                 case MethodicStates.DataInput:
+                    SetState(MethodicStates.DataRequestCall);
+                    break;
+                case MethodicStates.DataRequestCall:
                     SetState(MethodicStates.DataRequestCall);
                     break;
             }
@@ -284,23 +298,55 @@ namespace Crosses
             _closingGroup.gameObject.SetActive(false);
         }
 
-        private void MakeRequestCall()
+        private async Task PostAsync(HttpClient httpClient, HttpContent content)
+        {
+            using HttpResponseMessage response = await httpClient.PostAsync(REQUEST_URL, content);
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            OnResponse(jsonResponse);
+        }
+
+        private async void MakeRequestCall()
         {
             _researchDataService.SetEmail(_canvasModel.EmailInput.text);
             _researchDataService.SetTotalFeedback(_canvasModel.FeedbackInput.text);
             _canvasModel.PreloaderPanel.gameObject.SetActive(true);
-            DOVirtual.DelayedCall(5f, OnRequestCallback);
+
+            HttpClient client = new HttpClient();
+            StringContent content = new StringContent(_researchDataService.GetDataJSON());
+
+            await PostAsync(client, content);
         }
 
-        private void OnRequestCallback()
-        {
-            Debug.Log(_researchDataService.GetDataJSON()); // TODO call post request
-            MoveToNextScene();
+        private void OnResponse(string jsonResponse)
+        {          
+            var parsedResponse = JsonUtility.FromJson<ObjectResponse>(jsonResponse);
+            try
+            {
+                if (parsedResponse.isSuccess)
+                {
+                    MoveToNextScene();
+                }
+                else
+                {
+                    ShowError();
+                }
+            }
+            catch(Exception e)
+            {
+                ShowError();
+            }
         }
 
         private void MoveToNextScene()
         {
+            _canvasModel.ErrorTxtPanel.gameObject.SetActive(false);
             SceneStateMachine.Instance.SetState(SceneStateNames.Thanks);
+        }
+
+        private void ShowError()
+        {
+            _canvasModel.ErrorTxtPanel.gameObject.SetActive(true);
+            _canvasModel.PreloaderPanel.gameObject.SetActive(false);
         }
 
         #endregion
