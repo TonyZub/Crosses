@@ -1,15 +1,26 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Networking;
+using System;
+using System.Collections;
 
 
 namespace Crosses
 {
 	public sealed class MethodicScreenCanvasModel : MonoBehaviour
 	{
-		#region Fields
+		#region Events
 
-		[SerializeField] private CanvasGroup _instructionCanvasGroup;
+		public event Action<string> RequestResponse;
+		public event Action<string> RequestError;
+
+        #endregion
+
+
+        #region Fields
+
+        [SerializeField] private CanvasGroup _instructionCanvasGroup;
 		[SerializeField] private CanvasGroup _mainMethodicCanvasGroup;
 		[SerializeField] private CanvasGroup _secondMethodicCanvasGroup;
 		[SerializeField] private CanvasGroup _inputCanvasGroup;
@@ -44,6 +55,8 @@ namespace Crosses
 		[SerializeField] private Vector2 _inputfontSizesForHorizontalScreen;
 
 		[SerializeField] private float _switchScreenDuration;
+
+		UnityWebRequest _request;
 
 		#endregion
 
@@ -84,6 +97,46 @@ namespace Crosses
 		public Vector2 InputfontSizesForVerticalScreen => _inputfontSizesForVerticalScreen;
 		public Vector2 InputfontSizesForHorizontalScreen => _inputfontSizesForHorizontalScreen;
 		public float SwitchScreenDuration => _switchScreenDuration;
+
+        #endregion
+
+
+        #region UnityMethods
+
+        private void OnDestroy()
+        {
+			_request.Dispose();
+		}
+
+        #endregion
+
+
+        #region Methods
+
+        public void GenerateRequest(string url, string json)
+		{
+			StartCoroutine(ProcessRequest(url, json));
+		}
+
+		private IEnumerator ProcessRequest(string uri, string json)
+		{
+			_request = new UnityWebRequest(uri, "POST");
+			byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+			_request.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
+			_request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+			_request.SetRequestHeader("Content-Type", "application/json");
+
+			yield return _request.SendWebRequest();
+
+			if (_request.result == UnityWebRequest.Result.ConnectionError)
+			{
+				RequestError?.Invoke(_request.error);
+			}
+			else
+			{
+				RequestResponse?.Invoke(_request.downloadHandler.text);
+			}
+		}
 
 		#endregion
 	}

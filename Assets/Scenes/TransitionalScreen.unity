@@ -187,6 +187,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3634723936010124372, guid: 26ac566ec10178f45888b4d9f499b70a, type: 3}
+      propertyPath: m_Url
+      value: https://streamable.com/5t2yca
+      objectReference: {fileID: 0}
+    - target: {fileID: 3634723936010124372, guid: 26ac566ec10178f45888b4d9f499b70a, type: 3}
+      propertyPath: m_DataSource
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4761629762505679863, guid: 26ac566ec10178f45888b4d9f499b70a, type: 3}
       propertyPath: m_Name
       value: VideoCanvas
@@ -274,6 +282,14 @@ PrefabInstance:
     - target: {fileID: 4761629762505679867, guid: 26ac566ec10178f45888b4d9f499b70a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7315149864665332999, guid: 26ac566ec10178f45888b4d9f499b70a, type: 3}
+      propertyPath: _firstVideoURL
+      value: Videos/video_1.mp4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7315149864665332999, guid: 26ac566ec10178f45888b4d9f499b70a, type: 3}
+      propertyPath: _secondVideoURL
+      value: Videos/video_2.mp4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 26ac566ec10178f45888b4d9f499b70a, type: 3}

@@ -11,8 +11,8 @@ namespace Crosses
 		#region Fields
 
 		[SerializeField] private VideoPlayer _videoPlayer;
-		[SerializeField] private VideoClip _firstVideoClip;
-		[SerializeField] private VideoClip _secondVideoClip;
+		[SerializeField] private string _firstVideoURL;
+		[SerializeField] private string _secondVideoURL;
 
 		[SerializeField] private CanvasGroup _introCanvasGroup;
 		[SerializeField] private CanvasGroup _videoCanvasGroup;
@@ -36,8 +36,6 @@ namespace Crosses
 		#region Properties
 
 		public VideoPlayer VideoPlayer => _videoPlayer;
-		public VideoClip FirstVideoClip => _firstVideoClip;
-		public VideoClip SecondVideoClip => _secondVideoClip;
 		public CanvasGroup IntroCanvasGroup => _introCanvasGroup;
 		public CanvasGroup VideoCanvasGroup => _videoCanvasGroup;
 		public CanvasGroup FeedbackCanvasGroup => _feedBackCanvasGroup;
@@ -52,6 +50,8 @@ namespace Crosses
 		public Vector2 ContainerAnchorsForHorizontalScreen => _containerAnchorsForHorizontalScreen;
 		public Vector2 InputFeedbackFontSizesForVerticalScreen => _inputFeedbackFontsSizesForVerticalScreen;
 		public Vector2 InputFeedbackFontSizesForHorizontalScreen => _inputFeedbackFontsSizesForHorizontalScreen;
+		public string FirstVideoURL => _firstVideoURL;
+		public string SecondVideoURL => _secondVideoURL;
 		public float PanelsSwitchDuration => _panelsSwitchDuration;
 
 		#endregion

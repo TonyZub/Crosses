@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Video;
+using System.IO;
 
 
 namespace Crosses
@@ -117,14 +118,14 @@ namespace Crosses
                     break;
                 case TransitionStates.FirstVideo:
                     SwitchCanvasGroups(_canvasModel.IntroCanvasGroup, _canvasModel.VideoCanvasGroup);
-                    _canvasModel.VideoPlayer.clip = _canvasModel.FirstVideoClip;
+                    _canvasModel.VideoPlayer.url = Path.Combine(Application.streamingAssetsPath, _canvasModel.FirstVideoURL);
                     _canvasModel.VideoPlayer.Play();
                     _canvasModel.VideoPlayer.loopPointReached += OnFirstVideoEnded;
                     _canvasModel.MoveNextBtn.gameObject.SetActive(false);
                     break;
                 case TransitionStates.SecondVideo:
                     _canvasModel.VideoPlayer.Stop();
-                    _canvasModel.VideoPlayer.clip = _canvasModel.SecondVideoClip;
+                    _canvasModel.VideoPlayer.url = Path.Combine(Application.streamingAssetsPath, _canvasModel.SecondVideoURL);
                     _canvasModel.VideoPlayer.Play();
                     _canvasModel.VideoPlayer.loopPointReached += OnSecondVideoEnded;
                     break;

@@ -2,8 +2,6 @@ using UnityEngine;
 using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System;
 
 
@@ -52,7 +50,6 @@ namespace Crosses
         private readonly MethodicScreenCanvasModel _canvasModel;
         private readonly ScreenOrientationService _screenOrientationService;
         private readonly ResearchDataService _researchDataService;
-        private readonly HttpClient _client;
 
         private CanvasGroup _closingGroup;
         private CanvasGroup _openingGroup;
@@ -77,7 +74,6 @@ namespace Crosses
             _screenOrientationService = globalServices.ScreenOrientationService;
             _researchDataService = globalServices.ResearchDataService;
             _mainMethodicAnswers = new List<MethodicPart>();
-            _client = new HttpClient();
             AdaptContainer(_screenOrientationService.ScreenOrientation);
             SubscribeEvents();
             SetState(MethodicStates.Instruction);
@@ -91,6 +87,8 @@ namespace Crosses
         private void SubscribeEvents()
         {
             _canvasModel.MoveNextBtn.onClick.AddListener(OnMoveNextPressed);
+            _canvasModel.RequestResponse += OnResponse;
+            _canvasModel.RequestError += ShowError;
             _screenOrientationService.ScreenOrientationChanged += AdaptContainer;
             for (int i = 0; i < _canvasModel.FirstMethodicButtons.Length; i++)
             {
@@ -109,6 +107,8 @@ namespace Crosses
         {
             DOTween.Kill(this);
             _canvasModel.MoveNextBtn.onClick.RemoveAllListeners();
+            _canvasModel.RequestResponse -= OnResponse;
+            _canvasModel.RequestError -= ShowError;
             _screenOrientationService.ScreenOrientationChanged -= AdaptContainer;
             for (int i = 0; i < _canvasModel.FirstMethodicButtons.Length; i++)
             {
@@ -198,7 +198,7 @@ namespace Crosses
                     _canvasModel.MoveNextBtn.gameObject.SetActive(true);
                     break;
                 case MethodicStates.DataRequestCall:
-                    MakeRequestCall();
+                    MakeDataRequest();
                     break;
             }
         }
@@ -254,7 +254,6 @@ namespace Crosses
             float totalPoints = 0f;
             for (int i = 0; i < elements.Length; i++)
             {
-                //if (elements[i].IsReversed) elements[i].Point = MAX_METHODIC_POINT - elements[i].Point;
                 totalPoints += elements[i].Point;
             }
             return totalPoints / 10f;
@@ -298,42 +297,29 @@ namespace Crosses
             _closingGroup.gameObject.SetActive(false);
         }
 
-        private async Task PostAsync(HttpClient httpClient, HttpContent content)
+        private void MakeDataRequest()
         {
-            using HttpResponseMessage response = await httpClient.PostAsync(REQUEST_URL, content);
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            OnResponse(jsonResponse);
-        }
-
-        private async void MakeRequestCall()
-        {
-            _researchDataService.SetEmail(_canvasModel.EmailInput.text);
-            _researchDataService.SetTotalFeedback(_canvasModel.FeedbackInput.text);
             _canvasModel.PreloaderPanel.gameObject.SetActive(true);
-
-            HttpClient client = new HttpClient();
-            StringContent content = new StringContent(_researchDataService.GetDataJSON());
-
-            await PostAsync(client, content);
+            _canvasModel.GenerateRequest(REQUEST_URL, _researchDataService.GetDataJSON());
         }
 
         private void OnResponse(string jsonResponse)
-        {          
-            var parsedResponse = JsonUtility.FromJson<ObjectResponse>(jsonResponse);
+        {
             try
             {
+                var parsedResponse = JsonUtility.FromJson<ObjectResponse>(jsonResponse);
                 if (parsedResponse.isSuccess)
                 {
                     MoveToNextScene();
                 }
                 else
                 {
-                    ShowError();
+                    ShowError(string.Empty);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                ShowError();
+                ShowError(string.Empty);
             }
         }
 
@@ -343,7 +329,7 @@ namespace Crosses
             SceneStateMachine.Instance.SetState(SceneStateNames.Thanks);
         }
 
-        private void ShowError()
+        private void ShowError(string message)
         {
             _canvasModel.ErrorTxtPanel.gameObject.SetActive(true);
             _canvasModel.PreloaderPanel.gameObject.SetActive(false);
