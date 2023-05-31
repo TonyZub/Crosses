@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine.Networking;
 using System;
 using System.Collections;
+using System.Runtime.InteropServices;
 
 
 namespace Crosses
@@ -108,36 +109,57 @@ namespace Crosses
 			_request.Dispose();
 		}
 
-        #endregion
-
-
-        #region Methods
-
-        public void GenerateRequest(string url, string json)
-		{
-			StartCoroutine(ProcessRequest(url, json));
-		}
-
-		private IEnumerator ProcessRequest(string uri, string json)
-		{
-			_request = new UnityWebRequest(uri, "POST");
-			byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
-			_request.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
-			_request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-			_request.SetRequestHeader("Content-Type", "application/json");
-
-			yield return _request.SendWebRequest();
-
-			if (_request.result == UnityWebRequest.Result.ConnectionError)
-			{
-				RequestError?.Invoke(_request.error);
-			}
-			else
-			{
-				RequestResponse?.Invoke(_request.downloadHandler.text);
-			}
-		}
-
 		#endregion
+
+
+#region Methods
+
+#if UNITY_WEBGL_API && !UNITY_EDITOR
+		[DllImport("__Internal")]
+		private static extern void MakePostRequest (string url, string data);
+#endif
+
+		public void GenerateRequest(string url, string json)
+		{
+#if UNITY_WEBGL_API && !UNITY_EDITOR
+			MakePostRequest(url, json);
+#endif
+			//StartCoroutine(ProcessRequest(url, json));
+		}
+
+		//private IEnumerator ProcessRequest(string uri, string json)
+		//{
+		//	_request = new UnityWebRequest(uri, "POST");
+		//	byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+		//	_request.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
+		//	_request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+		//	_request.SetRequestHeader("Content-Type", "application/json");
+		//	_request.SetRequestHeader("Access-Control-Allow-Origin", "*");
+		//	_request.SetRequestHeader("Access-Control-Allow-Credentials", "false");
+
+		//	yield return _request.SendWebRequest();
+
+		//	if (_request.result == UnityWebRequest.Result.ConnectionError)
+		//	{
+		//		RequestError?.Invoke(_request.error);
+		//	}
+		//	else
+		//	{
+		//		RequestResponse?.Invoke(_request.downloadHandler.text);
+		//	}
+		//}
+
+		public void OnRequestNetError()
+        {
+			RequestError?.Invoke(string.Empty);
+        }
+
+		public void OnRequestResponse(string message)
+        {
+			_errorTxtPanel.GetComponentInChildren<TMP_Text>().text = message;
+			RequestResponse?.Invoke(message);
+        }
+
+#endregion
 	}
 }
