@@ -99,7 +99,7 @@ namespace Crosses
             }
             else
             {
-                InitSceneSwitch(SceneStateNames.Methodic);
+                InitSceneSwitch(SceneStateNames.Welcome);
             }
 #else
             InitSceneSwitch(SceneStateNames.Welcome);
